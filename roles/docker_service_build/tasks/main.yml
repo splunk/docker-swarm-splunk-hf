@@ -1,6 +1,6 @@
 # gather facts via setup in the role, which is after delegation
 # we want to enable inventory configurations to make use of collected facts (like ansible_date_time)
-- name: setup
+- name: run setup to gather facts
   setup:
 
 - name: create temporary work directory
