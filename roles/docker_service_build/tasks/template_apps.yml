@@ -15,7 +15,7 @@
 
 - name: create app directories
   file:
-    path: "{{ docker_build_directory.path }}/apps//{{ item.path | relpath(role_path + '/templates/auto') }}"
+    path: "{{ docker_build_directory.path }}/{{ item.path | relpath(role_path + '/templates/auto') }}"
     state: directory
   loop: "{{ app_components.files }}"
   when: item.isdir
@@ -23,6 +23,6 @@
 - name: template app files
   template:
     src: "{{ item.path }}"
-    dest: "{{ docker_build_directory.path }}/apps//{{ item.path | relpath(role_path + '/templates/auto') }}"
+    dest: "{{ docker_build_directory.path }}/{{ item.path | relpath(role_path + '/templates/auto') }}"
   loop: "{{ app_components.files }}"
   when: not item.isdir and not item.islnk
