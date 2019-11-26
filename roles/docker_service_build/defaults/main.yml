@@ -1,0 +1,3 @@
+# the if logic is in place to grab inventory vars about the host we connect to (docker_build_hosts), vs the host we're operating about (docker_services)
+# by default build in the user's home directory
+docker_build_path: "{{ hostvars[ansible_host]['docker_build_path'] if 'docker_build_path' in hostvars[ansible_host] else '~' }}"

@@ -1,0 +1,62 @@
+# gather facts via setup in the role, which is after delegation
+# we want to enable inventory configurations to make use of collected facts (like ansible_date_time)
+- name: setup
+  setup:
+
+- name: create temporary work directory
+  tempfile:
+    state: directory
+    prefix: "{{ docker_build_directory_prefix }}"
+    path: "{{ docker_build_path }}"
+  register: docker_build_directory
+
+- block:
+    - name: create apps work directory
+      file:
+        path: "{{ docker_build_directory.path }}/apps"
+        state: directory
+
+    - name: find app components to template
+      delegate_to: localhost
+      find:
+        file_type: any
+        recurse: true
+        paths:
+          - "{{ role_path }}/templates/auto"
+      register: app_components
+
+    - name: create app directories
+      file:
+        path: "{{ docker_build_directory.path }}/apps//{{ item.path | relpath(role_path + '/templates/auto') }}"
+        state: directory
+      loop: "{{ app_components.files }}"
+      when: item.isdir
+
+    - name: template app files
+      template:
+        src: "{{ item.path }}"
+        dest: "{{ docker_build_directory.path }}/apps//{{ item.path | relpath(role_path + '/templates/auto') }}"
+      loop: "{{ app_components.files }}"
+      when: not item.isdir and not item.islnk
+
+  rescue:
+    - name: clean failed failed temporary work
+      file:
+        path: "{{ docker_build_directory.path }}"
+        state: absent
+      tags:
+        - cleanup
+        - failed_cleanup
+
+    - name: fail in rescue to prevent continuation
+      fail:
+        msg: stopping after cleaning failed temporary work
+      
+  always:
+    - name: clean temporary work directory
+      file:
+        path: "{{ docker_build_directory.path }}"
+        state: absent
+      tags:
+        - cleanup
+        - successful_cleanup

@@ -1,0 +1,3 @@
+docker_build_directory_prefix: docker_build_
+indexed_field_stanza_prefix: docker_build_
+indexed_field_class_name: docker_build
