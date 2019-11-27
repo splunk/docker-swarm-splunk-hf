@@ -11,7 +11,7 @@
   register: docker_build_directory
 
 - block:
-    - include_tasks: template_apps.yml
+    - include_tasks: template.yml
     - include_tasks: docker_build.yml
 
   rescue:
