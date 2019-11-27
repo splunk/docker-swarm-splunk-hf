@@ -1,4 +1,4 @@
-FROM ubuntu:19.04 AS sas_docker_base
+FROM ubuntu:{{ ubuntu_tag }} AS splunk_hf_base
 
 RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime \
   && groupadd {{ splunk_group }} -g {{ splunk_group_id }} \

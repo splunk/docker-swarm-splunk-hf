@@ -5,10 +5,10 @@
   roles:
     - role: docker_service_build
       delegate_to: "{{ groups['docker_build_hosts'] | first }}"
-      when: "'build_image' in hostvars[inventory_hostname]"
+      when: "'build' in tags"
       production_image: yes
 
     - role: docker_service_build
       delegate_to: "{{ groups['docker_build_hosts'] | first }}"
-      when: "'build_image' in hostvars[inventory_hostname]"
+      when: "'build' in tags"
       production_image: no
