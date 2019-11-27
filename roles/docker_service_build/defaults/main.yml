@@ -6,5 +6,8 @@ timezone: UTC
 
 apt_packages: []
 
+common_apt_packages: []
+host_apt_packages: []
+
 common_indexed_fields: {}
 host_indexed_fields: {}
