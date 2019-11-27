@@ -1,8 +1,3 @@
-- name: create apps work directory
-  file:
-    path: "{{ docker_build_directory.path }}/apps"
-    state: directory
-
 - name: find app components to template
   # app components exist on the host running ansible, which isn't always the host doing the docker build
   delegate_to: localhost

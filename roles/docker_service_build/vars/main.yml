@@ -1,3 +1,7 @@
 docker_build_directory_prefix: docker_build_
 indexed_field_stanza_prefix: docker_build_
 indexed_field_class_name: docker_build
+
+# indexed_fields is calculated by combining common_ and host_ variants
+# this is accomplished in vars/ instead of defaults/ as it should not be overridden
+indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
