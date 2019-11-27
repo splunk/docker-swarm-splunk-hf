@@ -13,7 +13,7 @@ USER {{ splunk_user_id }}:{{ splunk_group_id }}
 # copy templated files before downloading, untarring, and accepting the splunk license so user-seed.conf is available
 COPY --chown={{ splunk_user_id }}:{{ splunk_group_id }} copy {{ splunk_home }}/
 
-# run dummy command and accept license to force splunk-launch.conf to be generated
+# run dummy command and accept license to populate var/ prior to defining the volume
 RUN wget -O- "{{ splunk_tgz_url }}" \
   | tar xz -C {{ splunk_home }}/.. \
   && {{ splunk_home }}/bin/splunk version --accept-license
