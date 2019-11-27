@@ -12,6 +12,7 @@
 
 - block:
     - include_tasks: template_apps.yml
+    - include_tasks: docker_build.yml
 
   rescue:
     - name: clean failed failed temporary work

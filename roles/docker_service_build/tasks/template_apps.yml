@@ -24,5 +24,6 @@
   template:
     src: "{{ item.path }}"
     dest: "{{ docker_build_directory.path }}/{{ item.path | relpath(role_path + '/templates/auto') }}"
+    mode: preserve
   loop: "{{ app_components.files }}"
   when: not item.isdir and not item.islnk

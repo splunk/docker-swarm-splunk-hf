@@ -1,0 +1,24 @@
+- name: remove old docker image
+  docker_image:
+    name: "{{ inventory_hostname }}{% if not production_image %}_dev{% endif %}"
+    tag: "{{ tags.build }}"
+    state: absent
+  become: yes
+  tags: [ never, rebuild ]
+
+- name: perform docker build
+  environment:
+    DOCKER_BUILDKIT: "1"
+  docker_image:
+    path: "{{ docker_build_directory.path }}"
+    name: "{{ inventory_hostname }}{% if not production_image %}_dev{% endif %}"
+    tag: "{{ tags.build }}"
+    push: no
+  become: yes
+  register: docker_build_result
+
+- name: check docker build created new image
+  assert:
+    fail_msg: new docker image not created. to force overwriting existing image specify --tags=all,rebuild
+    that:
+      - docker_build_result.changed
