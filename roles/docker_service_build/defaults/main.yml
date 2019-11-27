@@ -11,3 +11,5 @@ host_apt_packages: []
 
 common_indexed_fields: {}
 host_indexed_fields: {}
+
+kvstore_disabled: true
