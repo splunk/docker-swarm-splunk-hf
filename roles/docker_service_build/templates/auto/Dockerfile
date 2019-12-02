@@ -11,7 +11,7 @@ WORKDIR {{ splunk_home }}
 USER {{ splunk_user_id }}:{{ splunk_group_id }}
 
 # copy templated files before downloading, untarring, and accepting the splunk license so user-seed.conf is available
-COPY --chown={{ splunk_user_id }}:{{ splunk_group_id }} copy {{ splunk_home }}/
+COPY --chown={{ splunk_user_id }}:{{ splunk_group_id }} splunk {{ splunk_home }}/
 
 # run dummy command and accept license to populate var/ prior to defining the volume
 RUN wget -O- "{{ splunk_tgz_url }}" \
