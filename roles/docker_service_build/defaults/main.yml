@@ -13,6 +13,9 @@ host_apt_packages: []
 common_template_paths: []
 host_template_paths: []
 
+common_copies: []
+host_copies: []
+
 common_indexed_fields: {}
 host_indexed_fields: {}
 

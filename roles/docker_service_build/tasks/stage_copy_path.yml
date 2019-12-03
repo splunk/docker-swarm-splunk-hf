@@ -1,0 +1,24 @@
+- name: "{{ src }} get stat"
+  delegate_to: localhost
+  stat:
+    path: "{{ src }}"
+  register: copy_src_stat
+
+- debug:
+    msg: "{{ copy_src_stat }}"
+
+# we have to use a variable name not passed to this tasks file if we want to override it
+- name: "{{ src }} set copy_src"
+  set_fact:
+    copy_src: "{{ src }}"
+
+# append / to copy_src if it's a directory, to copy only its contents, which is how the templating works as well
+- name: "{{ copy_src }} add trailing slash to src if it's a directory"
+  set_fact:
+    copy_src: "{{ copy_src }}/"
+  when: copy_src_stat.stat.isdir
+
+- name: "{{ copy_src }} copy files"
+  copy:
+    src: "{{ copy_src }}"
+    dest: "{{ docker_build_directory.path }}/{{ '' if 'is_base_path' in copy_paths[dest] and copy_paths[dest]['is_base_path'] else dest }}/"
