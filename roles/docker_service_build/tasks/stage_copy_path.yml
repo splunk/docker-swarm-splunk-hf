@@ -21,4 +21,4 @@
 - name: "{{ copy_src }} copy files"
   copy:
     src: "{{ copy_src }}"
-    dest: "{{ docker_build_directory.path }}/{{ '' if 'is_base_path' in copy_paths[dest] and copy_paths[dest]['is_base_path'] else dest }}/"
+    dest: "{{ docker_build_directory.path }}/{{ '' if 'is_base_path' in staging_paths[dest] and staging_paths[dest]['is_base_path'] else dest }}/"

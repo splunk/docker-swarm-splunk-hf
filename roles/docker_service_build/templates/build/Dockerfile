@@ -11,9 +11,9 @@ WORKDIR {{ splunk_home }}
 USER {{ splunk_user_id }}:{{ splunk_group_id }}
 
 # copy files before downloading, untarring, and accepting the splunk license so user-seed.conf is available
-{% for copy_path_name in copy_paths | sort %}
-{% if copy_paths[copy_path_name] and 'dest' in copy_paths[copy_path_name] %}
-{% set copy_path_config = copy_paths[copy_path_name]%}
+{% for copy_path_name in staging_paths | sort %}
+{% if staging_paths[copy_path_name] and 'dest' in staging_paths[copy_path_name] %}
+{% set copy_path_config = staging_paths[copy_path_name]%}
 COPY {% if 'owner' in copy_path_config %}--chown={{ copy_path_config.owner }}{% if 'group' in copy_path_config %}:{{ copy_path_config.group }}{% endif %} {% endif %}{{ copy_path_name }}/ {{ copy_path_config.dest }}/
 {% endif %}
 {% endfor %}

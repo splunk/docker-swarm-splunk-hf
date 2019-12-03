@@ -1,8 +1,8 @@
-- name: create copy paths
+- name: create staging paths
   file:
     path: "{{ docker_build_directory.path }}/{{ item.key }}"
     state: directory
-  loop: "{{ copy_paths | dict2items }}"
+  loop: "{{ staging_paths | dict2items }}"
   when: "not ('is_base_path' in item.value and item.value.is_base_path)"
 
 - include_tasks: stage_type.yml

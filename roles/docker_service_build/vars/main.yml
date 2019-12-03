@@ -2,7 +2,8 @@ docker_build_directory_prefix: docker_build_
 indexed_field_stanza_prefix: docker_build_
 indexed_field_class_name: docker_build
 
-copy_paths: "{{ role_copy_paths | combine(common_copy_paths) | combine(host_copy_paths) }}"
+staging_paths: "{{ role_staging_paths | combine(common_staging_paths) | combine(host_staging_paths) }}"
+
 apt_packages: "{{ common_apt_packages + host_apt_packages }}"
 template_paths: "{{ role_template_paths + common_template_paths + host_template_paths }}"
 copies: "{{ role_copies + common_copies + host_copies }}"
@@ -14,7 +15,7 @@ indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
 # this allows a fewer number of COPY operations, as one copy path can contain multiple copy/template sets
 # a new copy path should be considered when there is not one that meets the dest/owner configuration you require
 # the assumption is that most use cases can be fully handled by these three defaults
-role_copy_paths:
+role_staging_paths:
     # where Dockerfile gets built
     # not copied to the docker image
     build:

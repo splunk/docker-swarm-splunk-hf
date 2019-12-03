@@ -18,7 +18,7 @@
 - name: "{{ src }} template files"
   template:
     src: "{{ item.path }}"
-    dest: "{{ docker_build_directory.path }}/{{ '' if 'is_base_path' in copy_paths[dest] and copy_paths[dest]['is_base_path'] else dest }}/{{ item.path | relpath(src) }}"
+    dest: "{{ docker_build_directory.path }}/{{ '' if 'is_base_path' in staging_paths[dest] and staging_paths[dest]['is_base_path'] else dest }}/{{ item.path | relpath(src) }}"
     mode: preserve
   loop: "{{ template_path_components.files }}"
   when: not item.isdir and not item.islnk
