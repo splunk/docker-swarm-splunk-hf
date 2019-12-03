@@ -1,10 +1,15 @@
+- name: create copy paths
+  file:
+    path: "{{ docker_build_directory.path }}/{{ item.key }}"
+    state: directory
+  loop: "{{ copy_paths | dict2items }}"
+  when: "not ('is_base_path' in item.value and item.value.is_base_path)"
+
 - include_tasks: template_path.yml
   vars:
     src: "{{ template_path_item.src }}"
-    owner: "{{ template_path_item.owner | default(omit) }}"
-    group: "{{ template_path_item.group | default(omit) }}"
-    name: "{{ template_path_item.name }}"
-  when: template_path_item.condition
+    dest: "{{ template_path_item.dest }}"
+  when: "('condition' not in template_path_item) or (template_path_item.condition)"
   loop: "{{ template_paths }}"
   loop_control:
     loop_var: template_path_item

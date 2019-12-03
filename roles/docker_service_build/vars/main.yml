@@ -2,37 +2,52 @@ docker_build_directory_prefix: docker_build_
 indexed_field_stanza_prefix: docker_build_
 indexed_field_class_name: docker_build
 
+copy_paths: "{{ role_copy_paths | combine(common_copy_paths) | combine(host_copy_paths) }}"
 apt_packages: "{{ common_apt_packages + host_apt_packages }}"
+template_paths: "{{ role_template_paths + common_template_paths + host_template_paths }}"
+#copies: "{{ common_copies + host_copies }}"
 
 indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
 
-template_paths:
+# locations that can be copied/templated to, and will be copied to the docker image one at a time
+# this allows a fewer number of COPY operations, as one copy path can contain multiple copy/template sets
+# a new copy path should be considered when there is not one that meets the dest/owner configuration you require
+# the assumption is that most use cases can be fully handled by these three defaults
+role_copy_paths:
+    # where Dockerfile gets built
+    # not copied to the docker image
+    build:
+      is_base_path: true
+    # dest is undefined, since build doesn't get copied to the docker image
+    # no ownerwhip specified
+    #owner:
+    #group:
+
+    # splunk_home
+    # splunk owner/group
+    splunk:
+      # dest is within the container
+      dest: "{{ splunk_home }}"
+      owner: "{{ splunk_user_id }}"
+      group: "{{ splunk_group_id }}"
+
+    # /
+    # root owner/group (by way of empty owner/group settings, resulting in non-specified --chown during copy
+    root:
+      dest: /
+
+role_template_paths:
       # build is the top level, which contains Dockerfile and all items Dockerfile refers to
-    - name: ""
-      src: "{{ role_path }}/templates/build"
-      # dest is undefined, since build doesn't get copied to the docker image
-      # no ownerwhip specified
-      #owner:
-      #group:
-      condition: "{{ true }}"
+    - src: "{{ role_path }}/templates/build"
+      dest: build
 
-    - name: base
-      src: "{{ role_path }}/templates/base"
-      dest: "{{ splunk_home }}"
-      owner: "{{ splunk_user_id }}"
-      group: "{{ splunk_group_id }}"
-      condition: "{{ true }}"
+    - src: "{{ role_path }}/templates/base"
+      dest: splunk
 
-    - name: production
-      src: "{{ role_path }}/templates/production"
-      dest: "{{ splunk_home }}"
-      owner: "{{ splunk_user_id }}"
-      group: "{{ splunk_group_id }}"
+    - src: "{{ role_path }}/templates/production"
+      dest: splunk
       condition: "{{ production_image }}"
 
-    - name: kvstore_disable
-      src: "{{ role_path }}/templates/kvstore_disable"
-      dest: "{{ splunk_home }}"
-      owner: "{{ splunk_user_id }}"
-      group: "{{ splunk_group_id }}"
+    - src: "{{ role_path }}/templates/kvstore_disable"
+      dest: splunk
       condition: "{{ kvstore_disabled }}"

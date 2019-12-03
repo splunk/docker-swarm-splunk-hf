@@ -10,10 +10,11 @@ RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime \
 WORKDIR {{ splunk_home }}
 USER {{ splunk_user_id }}:{{ splunk_group_id }}
 
-# copy templated files before downloading, untarring, and accepting the splunk license so user-seed.conf is available
-{% for template_path in template_paths %}
-{% if 'dest' in template_path and template_path.condition %}
-COPY {% if 'owner' in template_path %}--chown={{ template_path.owner }}{% if 'group' in template_path %}:{{ template_path.group }}{% endif %} {% endif %}{{ template_path.name }} {{ template_path.dest }}/
+# copy files before downloading, untarring, and accepting the splunk license so user-seed.conf is available
+{% for copy_path_name in copy_paths | sort %}
+{% if copy_paths[copy_path_name] and 'dest' in copy_paths[copy_path_name] %}
+{% set copy_path_config = copy_paths[copy_path_name]%}
+COPY {% if 'owner' in copy_path_config %}--chown={{ copy_path_config.owner }}{% if 'group' in copy_path_config %}:{{ copy_path_config.group }}{% endif %} {% endif %}{{ copy_path_name }}/ {{ copy_path_config.dest }}/
 {% endif %}
 {% endfor %}
 

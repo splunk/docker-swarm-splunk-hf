@@ -4,10 +4,14 @@ docker_build_path: "{{ hostvars[ansible_host]['docker_build_path'] if 'docker_bu
 
 timezone: UTC
 
-apt_packages: []
+common_copy_paths: {}
+host_copy_paths: {}
 
 common_apt_packages: []
 host_apt_packages: []
+
+common_template_paths: []
+host_template_paths: []
 
 common_indexed_fields: {}
 host_indexed_fields: {}
