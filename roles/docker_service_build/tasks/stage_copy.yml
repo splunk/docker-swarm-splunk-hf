@@ -18,4 +18,4 @@
 - name: "{{ copy_src }} copy files"
   copy:
     src: "{{ copy_src }}"
-    dest: "{{ docker_build_directory.path }}/{{ '' if 'is_base_path' in staging_paths[stage_item_config.dest] and staging_paths[stage_item_config.dest]['is_base_path'] else stage_item_config.dest }}/"
+    dest: "{{ stage_item_dest }}"

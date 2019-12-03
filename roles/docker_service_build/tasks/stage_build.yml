@@ -8,6 +8,7 @@
 - include_tasks: "stage_{{ stage_item.type }}.yml"
   vars:
     stage_item_config: "{{ stage_item }}"
+    stage_item_dest: "{{ docker_build_directory.path }}/{{ '' if 'is_base_path' in staging_paths[stage_item.dest] and staging_paths[stage_item.dest]['is_base_path'] else stage_item.dest }}/{{ stage_item.dest_sub_path | default('') }}"
   loop: "{{ stage_items }}"
   loop_control:
     loop_var: stage_item
