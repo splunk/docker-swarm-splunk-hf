@@ -1,0 +1,8 @@
+- include_tasks: stage_template_path.yml
+  vars:
+    src: "{{ template_path_item.src }}"
+    dest: "{{ template_path_item.dest }}"
+  when: "('condition' not in template_path_item) or (template_path_item.condition)"
+  loop: "{{ template_paths }}"
+  loop_control:
+    loop_var: template_path_item

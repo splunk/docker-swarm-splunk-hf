@@ -11,7 +11,8 @@
   register: docker_build_directory
 
 - block:
-    - include_tasks: template.yml
+    - include_tasks: prepare_copy_paths.yml
+    - include_tasks: stage_templates.yml
     - include_tasks: docker_build.yml
 
   rescue:
