@@ -16,6 +16,9 @@ host_template_paths: []
 common_copies: []
 host_copies: []
 
+common_archives: []
+host_archives: []
+
 common_indexed_fields: {}
 host_indexed_fields: {}
 

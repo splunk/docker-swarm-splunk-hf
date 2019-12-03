@@ -1,0 +1,8 @@
+- include_tasks: stage_archive_path.yml
+  vars:
+    src: "{{ archive_path_item.src }}"
+    dest: "{{ archive_path_item.dest }}"
+  when: "('condition' not in archive_path_item) or (archive_path_item.condition)"
+  loop: "{{ archives }}"
+  loop_control:
+    loop_var: archive_path_item

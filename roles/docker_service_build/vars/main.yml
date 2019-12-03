@@ -6,6 +6,7 @@ copy_paths: "{{ role_copy_paths | combine(common_copy_paths) | combine(host_copy
 apt_packages: "{{ common_apt_packages + host_apt_packages }}"
 template_paths: "{{ role_template_paths + common_template_paths + host_template_paths }}"
 copies: "{{ role_copies + common_copies + host_copies }}"
+archives: "{{ role_archives + common_archives + host_archives }}"
 
 indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
 
@@ -55,3 +56,6 @@ role_template_paths:
 
 # there are no copied (non-templated) paths right now
 role_copies: []
+
+# there are no archived paths right now
+role_archives: []
