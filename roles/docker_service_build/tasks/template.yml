@@ -1,16 +1,10 @@
 - include_tasks: template_path.yml
   vars:
-    template_path: "{{ template_path_item.template_path }}"
+    src: "{{ template_path_item.src }}"
+    owner: "{{ template_path_item.owner | default(omit) }}"
+    group: "{{ template_path_item.group | default(omit) }}"
+    name: "{{ template_path_item.name }}"
   when: template_path_item.condition
-  loop:
-    - template_path: "{{ role_path }}/templates/auto"
-      condition: "{{ true }}"
-
-    - template_path: "{{ role_path }}/templates/manual/production"
-      condition: "{{ production_image }}"
-
-    - template_path: "{{ role_path }}/templates/manual/kvstore_disable"
-      condition: "{{ kvstore_disabled }}"
-
+  loop: "{{ template_paths }}"
   loop_control:
     loop_var: template_path_item

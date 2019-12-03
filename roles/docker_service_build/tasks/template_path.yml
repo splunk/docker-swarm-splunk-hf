@@ -5,12 +5,12 @@
     file_type: any
     recurse: true
     paths:
-      - "{{ template_path }}"
+      - "{{ src }}"
   register: template_path_components
 
 - name: create template directories
   file:
-    path: "{{ docker_build_directory.path }}/{{ item.path | relpath(template_path) }}"
+    path: "{{ docker_build_directory.path }}/{{ name }}/{{ item.path | relpath(src) }}"
     state: directory
   loop: "{{ template_path_components.files }}"
   when: item.isdir
@@ -18,7 +18,7 @@
 - name: template files
   template:
     src: "{{ item.path }}"
-    dest: "{{ docker_build_directory.path }}/{{ item.path | relpath(template_path) }}"
+    dest: "{{ docker_build_directory.path }}/{{ name }}/{{ item.path | relpath(src) }}"
     mode: preserve
   loop: "{{ template_path_components.files }}"
   when: not item.isdir and not item.islnk

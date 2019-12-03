@@ -5,3 +5,34 @@ indexed_field_class_name: docker_build
 apt_packages: "{{ common_apt_packages + host_apt_packages }}"
 
 indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
+
+template_paths:
+      # build is the top level, which contains Dockerfile and all items Dockerfile refers to
+    - name: ""
+      src: "{{ role_path }}/templates/build"
+      # dest is undefined, since build doesn't get copied to the docker image
+      # no ownerwhip specified
+      #owner:
+      #group:
+      condition: "{{ true }}"
+
+    - name: base
+      src: "{{ role_path }}/templates/base"
+      dest: "{{ splunk_home }}"
+      owner: "{{ splunk_user_id }}"
+      group: "{{ splunk_group_id }}"
+      condition: "{{ true }}"
+
+    - name: production
+      src: "{{ role_path }}/templates/production"
+      dest: "{{ splunk_home }}"
+      owner: "{{ splunk_user_id }}"
+      group: "{{ splunk_group_id }}"
+      condition: "{{ production_image }}"
+
+    - name: kvstore_disable
+      src: "{{ role_path }}/templates/kvstore_disable"
+      dest: "{{ splunk_home }}"
+      owner: "{{ splunk_user_id }}"
+      group: "{{ splunk_group_id }}"
+      condition: "{{ kvstore_disabled }}"
