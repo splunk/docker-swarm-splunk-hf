@@ -1,8 +1,0 @@
-- include_tasks: stage_copy_path.yml
-  vars:
-    src: "{{ copy_path_item.src }}"
-    dest: "{{ copy_path_item.dest }}"
-  when: "('condition' not in copy_path_item) or (copy_path_item.condition)"
-  loop: "{{ copies }}"
-  loop_control:
-    loop_var: copy_path_item

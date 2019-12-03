@@ -1,0 +1,8 @@
+- include_tasks: "{{ type_task_file }}"
+  vars:
+    src: "{{ type_loop_item.src }}"
+    dest: "{{ type_loop_item.dest }}"
+  when: "('condition' not in type_loop_item) or (type_loop_item.condition)"
+  loop: "{{ type_loop_var }}"
+  loop_control:
+    loop_var: type_loop_item

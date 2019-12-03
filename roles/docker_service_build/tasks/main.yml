@@ -12,9 +12,6 @@
 
 - block:
     - include_tasks: prepare_copy_paths.yml
-    - include_tasks: stage_templates.yml
-    - include_tasks: stage_copies.yml
-    - include_tasks: stage_archives.yml
     - include_tasks: docker_build.yml
 
   rescue:
