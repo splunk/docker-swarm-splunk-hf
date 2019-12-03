@@ -5,9 +5,8 @@ indexed_field_class_name: docker_build
 staging_paths: "{{ role_staging_paths | combine(common_staging_paths) | combine(host_staging_paths) }}"
 
 apt_packages: "{{ common_apt_packages + host_apt_packages }}"
-template_paths: "{{ role_template_paths + common_template_paths + host_template_paths }}"
-copies: "{{ role_copies + common_copies + host_copies }}"
-archives: "{{ role_archives + common_archives + host_archives }}"
+
+stage_items: "{{ role_stage_items + common_stage_items + host_stage_items }}"
 
 indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
 
@@ -38,25 +37,23 @@ role_staging_paths:
     root:
       dest: /
 
-role_template_paths:
+role_stage_items:
       # build is the top level, which contains Dockerfile and all items Dockerfile refers to
     - src: "{{ role_path }}/templates/build"
       dest: build
+      type: template
 
       # base is things that go into every splunk install
     - src: "{{ role_path }}/templates/base"
       dest: splunk
+      type: template
 
     - src: "{{ role_path }}/templates/production"
       dest: splunk
       condition: "{{ production_image }}"
+      type: template
 
     - src: "{{ role_path }}/templates/kvstore_disable"
       dest: splunk
       condition: "{{ kvstore_disabled }}"
-
-# there are no copied (non-templated) paths right now
-role_copies: []
-
-# there are no archived paths right now
-role_archives: []
+      type: template

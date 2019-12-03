@@ -5,16 +5,9 @@
   loop: "{{ staging_paths | dict2items }}"
   when: "not ('is_base_path' in item.value and item.value.is_base_path)"
 
-- include_tasks: stage_type.yml
+- include_tasks: "stage_{{ stage_item.type }}.yml"
   vars:
-    type_task_file: "{{ stage_type_item.task_file }}"
-    type_loop_var: "{{ stage_type_item.task_loop_var }}"
-  loop:
-    - task_file: stage_template_path.yml
-      task_loop_var: "{{ template_paths }}"
-    - task_file: stage_copy_path.yml
-      task_loop_var: "{{ copies }}"
-    - task_file: stage_archive_path.yml
-      task_loop_var: "{{ archives }}"
+    stage_item_config: "{{ stage_item }}"
+  loop: "{{ stage_items }}"
   loop_control:
-    loop_var: stage_type_item
+    loop_var: stage_item
