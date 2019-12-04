@@ -12,3 +12,4 @@
   loop: "{{ stage_items }}"
   loop_control:
     loop_var: stage_item
+  when: "('condition' not in stage_item) or (stage_item.condition)"
