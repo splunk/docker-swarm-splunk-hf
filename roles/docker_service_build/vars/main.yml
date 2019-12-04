@@ -33,11 +33,6 @@ role_staging_paths:
       owner: "{{ splunk_user_id }}"
       group: "{{ splunk_group_id }}"
 
-    # /
-    # root owner/group (by way of empty owner/group settings, resulting in non-specified --chown during copy
-    root:
-      dest: /
-
 role_stage_items:
       # build is the top level, which contains Dockerfile and all items Dockerfile refers to
     - src: "{{ role_path }}/templates/build"

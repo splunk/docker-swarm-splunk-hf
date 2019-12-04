@@ -1,7 +1,7 @@
 - name: remove old docker image
   docker_image:
-    name: "{{ image }}{% if not production_image %}_dev{% endif %}"
-    tag: "{{ tags.build }}"
+    name: "{{ inventory_hostname }}"
+    tag: "{% if production_image %}{{ tags.build }}{% else %}dev{% endif %}"
     state: absent
   become: yes
   tags: [ never, rebuild ]
@@ -11,8 +11,8 @@
     DOCKER_BUILDKIT: "1"
   docker_image:
     path: "{{ docker_build_directory.path }}"
-    name: "{{ image }}{% if not production_image %}_dev{% endif %}"
-    tag: "{{ tags.build }}"
+    name: "{{ inventory_hostname }}"
+    tag: "{% if production_image %}{{ tags.build }}{% else %}dev{% endif %}"
     push: no
   become: yes
   register: docker_build_result

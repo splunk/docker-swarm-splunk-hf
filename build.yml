@@ -1,4 +1,4 @@
-- hosts: docker_services
+- hosts: docker_build_images
   # playbooks gather facts before roles, which is where delegation is performed
   # so set gather_facts to no here, and run setup explicitly in the role
   gather_facts: no
