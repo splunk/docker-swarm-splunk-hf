@@ -3,7 +3,7 @@
   # so set gather_facts to no here, and run setup explicitly in the role
   gather_facts: no
   roles:
-    - role: gather_facts
+    - role: docker_build_gather_facts
       delegate_to: "{{ groups['docker_build_hosts'] | first }}"
 
     - role: docker_service_build
