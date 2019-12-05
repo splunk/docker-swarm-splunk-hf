@@ -10,18 +10,15 @@ RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime \
 WORKDIR {{ splunk_home }}
 USER {{ splunk_user_id }}:{{ splunk_group_id }}
 
-# copy files before downloading, untarring, and accepting the splunk license so user-seed.conf is available
+RUN wget -O "{{ splunk_home }}/splunk.tgz" "{{ splunk_tgz_url }}" \
+  && mkdir {{ splunk_home }}/var
+
 {% for copy_path_name in staging_paths | sort %}
 {% if staging_paths[copy_path_name] and 'dest' in staging_paths[copy_path_name] %}
 {% set copy_path_config = staging_paths[copy_path_name]%}
 COPY {% if 'owner' in copy_path_config %}--chown={{ copy_path_config.owner }}{% if 'group' in copy_path_config %}:{{ copy_path_config.group }}{% endif %} {% endif %}{{ copy_path_name }}/ {{ copy_path_config.dest }}/
 {% endif %}
 {% endfor %}
-
-# run dummy command and accept license to populate var/ prior to defining the volume
-RUN wget -O- "{{ splunk_tgz_url }}" \
-  | tar xz -C {{ splunk_home }}/.. \
-  && {{ splunk_home }}/bin/splunk version --accept-license
 
 # var/ needs to be a volume to pass file lock test
 VOLUME ["{{ splunk_home }}/var"]
