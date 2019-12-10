@@ -1,0 +1,4 @@
+user: "{{ splunk_user }}"
+
+common_publish: []
+host_publish: []

@@ -1,0 +1,2 @@
+docker_image_name: "{{ image_name | default(inventory_hostname) }}"
+repository_deploy_image: "{% if repository is defined %}{{ repository }}/{% endif %}{{ docker_image_name }}:{{ tags.deploy }}"

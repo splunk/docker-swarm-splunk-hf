@@ -1,0 +1,22 @@
+# these vars are used to aid dynamic variable names
+
+# template volume driver var *names* (not values)
+var_volume_driver: "{{ volume_type }}_volume_driver"
+var_volume_driver_option_type: "{{ volume_type }}_volume_driver_option_type"
+var_volume_driver_option_o: "{{ volume_type }}_volume_driver_option_o"
+var_volume_driver_option_device: "{{ volume_type }}_volume_driver_option_device"
+var_volume_create_path: "{{ volume_type }}_create_path"
+
+# template volume driver values
+volume_driver: "{{ lookup('vars', var_volume_driver) }}"
+volume_driver_option_type: "{{ lookup('vars', var_volume_driver_option_type) }}"
+volume_driver_option_o: "{{ lookup('vars', var_volume_driver_option_o) }}"
+volume_driver_option_device: "{{ lookup('vars', var_volume_driver_option_device) }}"
+volume_create_path: "{{ lookup('vars', var_volume_create_path, default='') }}"
+
+# TODO - is there a better way to dynamically create a list of custom dicts?
+volumes_config: "{{ lookup('template', role_path+'/vars/volumes_config.yml.j2') | from_yaml }}"
+
+
+# combine common and host publish configs
+publish: "{{ common_publish + host_publish }}"

@@ -1,0 +1,7 @@
+- hosts: docker_build_images
+  # nothing here should rely on gathered facts
+  gather_facts: no
+  roles:
+    - role: docker_image_push
+      delegate_to: "{{ groups['docker_build_hosts'] | first }}"
+      when: "'deploy' in tags"

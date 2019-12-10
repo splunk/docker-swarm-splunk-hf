@@ -1,0 +1,8 @@
+# the volume_ variables are templated in this role's vars/main.yml
+- name: remove volume
+  docker_volume:
+    name: "{{ volume_name }}"
+    state: absent
+  become: true
+  loop: "{{ groups['docker_swarm_nodes'] }}"
+  delegate_to: "{{ item }}"

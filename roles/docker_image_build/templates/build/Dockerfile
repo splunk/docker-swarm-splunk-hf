@@ -20,7 +20,10 @@ COPY {% if 'owner' in copy_path_config %}--chown={{ copy_path_config.owner }}{% 
 {% endif %}
 {% endfor %}
 
-# var/ needs to be a volume to pass file lock test
-VOLUME ["{{ splunk_home }}/var"]
+{% for volume in volumes %}
+{% if volume.mount_type == 'image_volume' %}
+VOLUME {{ volume.path }}
+{% endif %}
+{% endfor %}
 
 ENTRYPOINT {{ splunk_home }}/entrypoint.sh

@@ -1,0 +1,7 @@
+- hosts: docker_services
+  # no need for gathered facts to push the image
+  gather_facts: no
+  roles:
+    - role: docker_service_deploy
+      delegate_to: "{{ groups['docker_swarm_managers'] | first }}"
+      when: "'deploy' in tags"

@@ -1,0 +1,14 @@
+- name: untag image prior to tag/push
+  docker_image:
+    name: "{{ repository_deploy_image }}"
+    tag: "{{ tags.deploy }}"
+    state: absent
+  become: yes
+
+- name: perform docker push
+  docker_image:
+    name: "{{ inventory_hostname }}"
+    tag: "{{ tags.deploy }}"
+    repository: "{{ repository_deploy_image }}"
+    push: yes
+  become: yes

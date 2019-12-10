@@ -53,3 +53,5 @@ role_stage_items:
       dest: splunk
       condition: "{{ kvstore_disabled }}"
       type: template
+
+# role_volumes is defined in group_vars/docker_services, since docker_service_deploy also needs it

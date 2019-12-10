@@ -1,0 +1,46 @@
+# ansible <2.8 docker_swarm_service can't accept driver_config, so for now we explicitly create the volumes first
+- name: create volumes
+  include_tasks: create_volume.yml
+  vars:
+    volume_path: "{{ volume_item.path }}"
+    volume_name: "{{ volume_item.name }}"
+    volume_type: "{{ volume_item.volume_type }}"
+    volume_owner: "{{ volume_item.owner | default(omit) }}"
+    volume_group: "{{ volume_item.group | default(omit) }}"
+  #      service volumes                                   for present services     implicit present                 explicit present
+  when: "(volume_item.mount_type == 'service_volume') and (state == 'present') and (('state' not in volume_item) or (volume_item.state == 'present'))"
+  loop: "{{ volumes }}"
+  loop_control:
+    loop_var: volume_item
+
+- name: deploy docker service
+  docker_swarm_service:
+    image: "{{ repository_deploy_image }}"
+    name: "{{ inventory_hostname }}"
+    hostname: "{{ inventory_hostname }}"
+    limit_cpu: "{{ limit_cpu }}"
+    limit_memory: "{{ limit_memory }}"
+    restart_policy: "{{ restart_policy }}"
+    publish: "{{ publish | default(omit) }}"
+    replicas: "{{ replicas | default(omit) }}"
+    # XXX - stupid naming
+    mounts: "{{ volumes_config.volume_configs }}"
+    state: "{{ state }}"
+    # require user to be specified, because defaults to root pre-2.8, overriding the image configuration
+    user: "{{ user }}"
+    log_driver: "{{ log_driver | default(omit) }}"
+    log_driver_options: "{{ log_driver_options | default(omit) }}"
+  become: true
+  # tagged to allow skipping to allow only management of volumes
+  tags:
+    - service
+
+- name: remove volumes
+  include_tasks: remove_volume.yml
+  vars:
+    volume_name: "{{ volume_item.name }}"
+  #      service volumes                                   for absent services     state explicitly defined      as absent
+  when: "(volume_item.mount_type == 'service_volume') and ((state == 'absent') or (('state' in volume_item) and (volume_item.state == 'absent')))"
+  loop: "{{ volumes }}"
+  loop_control:
+    loop_var: volume_item
