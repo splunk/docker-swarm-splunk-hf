@@ -1,5 +1,8 @@
-# the provided role_volumes don't have names or persistent storage options, so they only affect Dockerfile.
-# but it is perfectly acceptable to have a common/host volume that has the same path as one of these defaults.
 role_volumes:
-    - path: "{{ splunk_home }}/var"
-      mount_type: image_volume
+    # image_volumes get defined as VOLUMEs in Dockerfile
+    - mount_type: image_volume
+      # paths are created inside Dockerfile prior to the VOLUME definition
+      path: "{{ splunk_home }}/var"
+      # Dockerfile switched USER context based on owner/group defined below before creating the path location
+      owner: "{{ splunk_user_id }}"
+      group: "{{ splunk_group_id }}"

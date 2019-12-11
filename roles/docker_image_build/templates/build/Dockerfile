@@ -7,10 +7,23 @@ RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime \
   && apt-get install -y --no-install-recommends wget ca-certificates {{ apt_packages|join(' ') }} \
   && apt-get clean
 
-WORKDIR {{ splunk_home }}
+# change user prior to untarring splunk
 USER {{ splunk_user_id }}:{{ splunk_group_id }}
 
-# copy files before downloading, untarring, and accepting the splunk license so user-seed.conf is available
+# fetch and untar splunk tgz as its own layer, so it can be consistent across builds
+# done prior to VOLUME definitions.  changes via Dockerfile to VOLUME paths after their creations are discarded.
+RUN wget -O- "{{ splunk_tgz_url }}" | tar xz -C {{ splunk_home }}/..
+
+# create VOLUMEs after untarring splunk
+{% for volume in volumes %}
+{% if volume.mount_type == 'image_volume' %}
+USER {{ splunk_user_id }}:{{ splunk_group_id }}
+RUN mkdir -p {{ volume.path }}
+VOLUME {{ volume.path }}
+{% endif %}
+{% endfor %}
+
+# perform staged file copies
 {% for copy_path_name in staging_paths | sort %}
 {% if staging_paths[copy_path_name] and 'dest' in staging_paths[copy_path_name] %}
 {% set copy_path_config = staging_paths[copy_path_name]%}
@@ -18,15 +31,8 @@ COPY {% if 'owner' in copy_path_config %}--chown={{ copy_path_config.owner }}{% 
 {% endif %}
 {% endfor %}
 
-# run dummy command and accept license to populate var/ prior to defining the volume
- RUN wget -O- "{{ splunk_tgz_url }}" \
-   | tar xz -C {{ splunk_home }}/.. \
-   && {{ splunk_home }}/bin/splunk version --accept-license
+# dump into $SPLUNK_HOME for exec, etc
+WORKDIR {{ splunk_home }}
 
-{% for volume in volumes %}
-{% if volume.mount_type == 'image_volume' %}
-VOLUME {{ volume.path }}
-{% endif %}
-{% endfor %}
-
+# entrypoint.sh may do run-time configurations prior to starting splunk
 ENTRYPOINT {{ splunk_home }}/entrypoint.sh
