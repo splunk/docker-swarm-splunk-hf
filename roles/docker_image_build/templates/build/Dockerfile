@@ -36,3 +36,7 @@ WORKDIR {{ splunk_home }}
 
 # entrypoint.sh may do run-time configurations prior to starting splunk
 ENTRYPOINT {{ splunk_home }}/entrypoint.sh
+
+{% if healthcheck_command is defined %}
+HEALTHCHECK --interval={{ healthcheck_interval_seconds }}s CMD {{ healthcheck_command }}
+{% endif %}

@@ -54,4 +54,9 @@ role_stage_items:
       condition: "{{ kvstore_disabled }}"
       type: template
 
+    - src: "{{ role_path }}/templates/metrics_healthcheck"
+      dest: splunk
+      condition: "{{ healthcheck_metrics_series is defined }}"
+      type: template
+
 # role_volumes is defined in group_vars/docker_services, since docker_service_deploy also needs it

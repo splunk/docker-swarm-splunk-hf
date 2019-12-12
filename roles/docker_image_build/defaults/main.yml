@@ -21,3 +21,5 @@ host_indexed_fields: {}
 #host_volumes: []
 
 kvstore_disabled: true
+
+healthcheck_command: "{{ splunk_home }}/bin/splunk cmd python {{ splunk_home }}/metrics_healthcheck.py"
