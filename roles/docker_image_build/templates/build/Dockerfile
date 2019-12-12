@@ -31,6 +31,24 @@ COPY {% if 'owner' in copy_path_config %}--chown={{ copy_path_config.owner }}{% 
 {% endif %}
 {% endfor %}
 
+{% if run_commands %}
+# configurable RUN commands are called after file copies so they can use the copied fils
+{% for run_command in run_commands %}
+{% if 'user' in run_command %}
+USER {{ run_command.user }}{% if 'group' in run_command  %}:{{ run_command.group }}{% endif %}
+
+{% endif %}
+{% if run_command.command is string %}
+RUN {{ run_command.command }}
+{% else %}
+RUN {{ run_command.command | join (' && ') }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+# run as splunk user on start
+USER {{ splunk_user_id }}:{{ splunk_group_id }}
+
 # dump into $SPLUNK_HOME for exec, etc
 WORKDIR {{ splunk_home }}
 

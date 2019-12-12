@@ -11,6 +11,8 @@ stage_items: "{{ role_stage_items + common_stage_items + host_stage_items }}"
 
 indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
 
+run_commands: "{{ common_run_commands + host_run_commands }}"
+
 # locations that can be copied/templated to, and will be copied to the docker image one at a time
 # this allows a fewer number of COPY operations, as one copy path can contain multiple copy/template sets
 # a new copy path should be considered when there is not one that meets the dest/owner configuration you require
