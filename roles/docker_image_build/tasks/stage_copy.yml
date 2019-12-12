@@ -19,3 +19,4 @@
   copy:
     src: "{{ copy_src }}"
     dest: "{{ stage_item_dest }}"
+    mode: preserve
