@@ -4,6 +4,7 @@
   find:
     file_type: any
     recurse: true
+    hidden: yes
     paths:
       - "{{ stage_item_config.src }}"
   register: template_path_components
