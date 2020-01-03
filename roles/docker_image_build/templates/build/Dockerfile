@@ -7,12 +7,14 @@ RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime \
   && apt-get install -y --no-install-recommends wget ca-certificates {{ apt_packages|join(' ') }} \
   && apt-get clean
 
+{% if install_splunk %}
 # change user prior to untarring splunk
 USER {{ splunk_user_id }}:{{ splunk_group_id }}
 
 # fetch and untar splunk tgz as its own layer, so it can be consistent across builds
 # done prior to VOLUME definitions.  changes via Dockerfile to VOLUME paths after their creations are discarded.
 RUN wget -O- "{{ splunk_tgz_url }}" | tar xz -C {{ splunk_home }}/..
+{% endif %}
 
 # create VOLUMEs after untarring splunk
 {% for volume in volumes %}
@@ -47,14 +49,14 @@ RUN {{ run_command.command | join (' && ') }}
 {% endif %}
 
 # run as splunk user on start
-USER {{ splunk_user_id }}:{{ splunk_group_id }}
+USER {{ entrypoint_user }}
 
 # dump into $SPLUNK_HOME for exec, etc
 WORKDIR {{ splunk_home }}
 
 # entrypoint.sh may do run-time configurations prior to starting splunk
-ENTRYPOINT {{ splunk_home }}/entrypoint.sh
+ENTRYPOINT {{ entrypoint }}
 
-{% if healthcheck_command is defined %}
+{% if healthcheck_command %}
 HEALTHCHECK --interval={{ healthcheck_interval_seconds }}s CMD {{ healthcheck_command }}
 {% endif %}

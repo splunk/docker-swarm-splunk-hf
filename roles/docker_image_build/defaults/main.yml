@@ -26,3 +26,11 @@ host_run_commands: []
 kvstore_disabled: true
 
 healthcheck_command: "{{ splunk_home }}/bin/splunk cmd python {{ splunk_home }}/metrics_healthcheck.py"
+
+entrypoint: "{{ splunk_home }}/entrypoint.sh"
+# by default run entrypoint as splunk user
+entrypoint_user: "{{ splunk_user_id }}:{{ splunk_group_id }}"
+
+# the provided entrypoint.sh (defined above) runs splunk
+# if install_splunk is set to false entrypoint also needs to be overridden
+install_splunk: true
