@@ -1,0 +1,4 @@
+- name: "{{ stage_item_config.dest }} create directories"
+  file:
+    path: "{{ stage_item_dest }}"
+    state: directory
