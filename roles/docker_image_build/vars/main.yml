@@ -53,7 +53,8 @@ role_stage_items:
 
     - src: "{{ role_path }}/templates/kvstore_disable"
       dest: splunk
-      condition: "{{ kvstore_disabled }}"
+      # leave kvstore enabled for dev images, since they are often used as all-in-one instances.
+      condition: "{{ kvstore_disabled and production_image }}"
       type: template
 
     - src: "{{ role_path }}/templates/metrics_healthcheck"
