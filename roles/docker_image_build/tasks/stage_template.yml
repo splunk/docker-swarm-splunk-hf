@@ -11,8 +11,9 @@
 
 - name: "{{ stage_item_config.src }} create template directories"
   file:
-    path: "{{ docker_build_directory.path }}/{{ stage_item_config.dest }}/{{ item.path | relpath(stage_item_config.src) }}"
+    path: "{{ stage_item_dest }}/{{ item.path | relpath(stage_item_config.src) }}"
     state: directory
+    recurse: yes
   loop: "{{ template_path_components.files }}"
   when: item.isdir
 

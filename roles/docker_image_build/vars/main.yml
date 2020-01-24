@@ -5,13 +5,18 @@ indexed_field_class_name: docker_build
 
 staging_paths: "{{ role_staging_paths | combine(common_staging_paths) | combine(host_staging_paths) }}"
 
-apt_packages: "{{ common_apt_packages + host_apt_packages }}"
+apt_packages: "{{ role_apt_packages + common_apt_packages + host_apt_packages }}"
 
 stage_items: "{{ role_stage_items + common_stage_items + host_stage_items }}"
 
 indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
 
 run_commands: "{{ common_run_commands + host_run_commands }}"
+
+role_apt_packages:
+  # Dockerfile uses curl, so it must be installed
+  - curl
+
 
 # locations that can be copied/templated to, and will be copied to the docker image one at a time
 # this allows a fewer number of COPY operations, as one copy path can contain multiple copy/template sets
