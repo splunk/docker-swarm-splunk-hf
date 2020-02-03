@@ -13,6 +13,7 @@
     path: "{{ docker_build_directory.path }}"
     name: "{{ inventory_hostname }}"
     tag: "{% if production_image %}{{ tags.build }}{% else %}dev{% endif %}"
+    source: build
     push: no
   become: yes
   register: docker_build_result

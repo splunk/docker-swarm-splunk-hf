@@ -1,8 +1,8 @@
 - name: Log in to repositories
   docker_login:
-    registry: "{{ repository }}"
-    username: "{{ repository_username }}"
-    password: "{{ repository_password }}"
+    registry: "{{ registry }}"
+    username: "{{ registry_username }}"
+    password: "{{ registry_password }}"
   become: yes
   loop: "{{ groups['docker_nodes'] }}"
   delegate_to: "{{ item }}"

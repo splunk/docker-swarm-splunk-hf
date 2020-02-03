@@ -2,3 +2,6 @@ user: "{{ splunk_user }}"
 
 common_publish: []
 host_publish: []
+
+common_docker_configs: []
+host_docker_configs: []

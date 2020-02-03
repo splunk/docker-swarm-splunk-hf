@@ -7,40 +7,53 @@
     volume_type: "{{ volume_item.volume_type }}"
     volume_owner: "{{ volume_item.owner | default(omit) }}"
     volume_group: "{{ volume_item.group | default(omit) }}"
-  #      service volumes                                   for present services     implicit present                 explicit present
-  when: "(volume_item.mount_type == 'service_volume') and (state == 'present') and (('state' not in volume_item) or (volume_item.state == 'present'))"
+  when: "(volume_item.mount_type == 'service_volume') and (state == 'present') and (volume_item is default_or_present)"
   loop: "{{ volumes }}"
+  # the _volume.yml tasks also use loop, so here we use a different loop_var
   loop_control:
     loop_var: volume_item
 
-- name: deploy docker service
-  docker_swarm_service:
-    image: "{{ repository_deploy_image }}"
-    name: "{{ inventory_hostname }}"
-    hostname: "{{ inventory_hostname }}"
-    limit_cpu: "{{ limit_cpu }}"
-    limit_memory: "{{ limit_memory }}"
-    restart_policy: "{{ restart_policy }}"
-    publish: "{{ publish | default(omit) }}"
-    replicas: "{{ replicas | default(omit) }}"
-    # XXX - stupid naming
-    mounts: "{{ volumes_config.volume_configs }}"
-    state: "{{ state }}"
-    # require user to be specified, because defaults to root pre-2.8, overriding the image configuration
-    user: "{{ user }}"
-    log_driver: "{{ log_driver | default(omit) }}"
-    log_driver_options: "{{ log_driver_options | default(omit) }}"
-  become: true
-  # tagged to allow skipping to allow only management of volumes
-  tags:
-    - service
+- name: handle config changes
+  block:
+    # docker configs can't be changed while associated with a running service
+    # thus, if this task fails we need to perform the process defined in rescue
+    - name: create final configs
+      include_tasks: create_configs.yml
+
+    - name: create service with final configs
+      include_tasks: create_service.yml
+
+  rescue:
+    - name:  create temporary configs
+      include_tasks: create_configs.yml
+      vars:
+        intermediate_configs: true
+
+    - name: create or update service with temporary configs
+      include_tasks: create_service.yml
+      vars:
+        intermediate_configs: true
+
+    - name:  update final configs
+      include_tasks: create_configs.yml
+
+    - name: update service with final configs
+      include_tasks: create_service.yml
+
+    - name: remove temporary configs
+      include_tasks: remove_configs.yml
+      vars:
+        intermediate_configs: true
 
 - name: remove volumes
   include_tasks: remove_volume.yml
   vars:
     volume_name: "{{ volume_item.name }}"
-  #      service volumes                                   for absent services     state explicitly defined      as absent
-  when: "(volume_item.mount_type == 'service_volume') and ((state == 'absent') or (('state' in volume_item) and (volume_item.state == 'absent')))"
+  when: "(volume_item.mount_type == 'service_volume') and ((state == 'absent') or (volume_item is defined_absent))"
   loop: "{{ volumes }}"
+  # the _volume.yml tasks also use loop, so here we use a different loop_var
   loop_control:
     loop_var: volume_item
+
+- name: remove stale docker configs
+  include_tasks: remove_configs.yml

@@ -1,0 +1,45 @@
+{% if volumes %}
+volumes:
+{% for volume in volumes %}
+{% if volume.mount_type == 'service_volume' %}
+  - type: volume
+    source: {{ volume.name }}
+    target: {{ volume.path }}
+{% elif volume.mount_type == 'service_bind' %}
+  - type: bind
+    source: {{ volume.source }}
+    target: {{ volume.target }}
+{% if 'readonly' in volume %}
+    readonly: {{ volume.readonly }}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% else %}
+volume_configs: {{ omit }}
+{% endif %}
+
+# this is the final set of configs, with the predictable and defined names
+{% if docker_configs | select("default_or_present") | list %}
+configs:
+{% for docker_config in docker_configs | select("default_or_present") %}
+  - config_name: {{ docker_config.name }}
+    filename: {{ docker_config.filename }}
+    uid: {{ docker_config.uid }}
+    gid: {{ docker_config.gid }}
+{% endfor %}
+{% else %}
+configs: []
+{% endif %}
+
+# this is the intermediate set of configs, with uuid names to enable config rotation
+{% if docker_configs | select("default_or_present") | list %}
+intermediate_configs:
+{% for docker_config in docker_configs | select("default_or_present") %}
+  - config_name : {{ docker_config.content | to_uuid }}
+    filename: {{ docker_config.filename }}
+    uid: {{ docker_config.uid }}
+    gid: {{ docker_config.gid }}
+{% endfor %}
+{% else %}
+intermediate_configs: []
+{% endif %}

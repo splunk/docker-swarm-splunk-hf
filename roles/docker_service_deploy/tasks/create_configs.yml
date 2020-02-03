@@ -1,0 +1,8 @@
+- name: "create {% if intermediate_configs is defined and intermediate_configs %}intermediate {% endif %}docker configs"
+  docker_config:
+    data: "{{ item.content }}"
+    data_is_b64: "{{ item.content_is_b64 | default(omit) }}"
+    name: "{% if intermediate_configs is defined and intermediate_configs %}{{ item.content | to_uuid }}{% else %}{{ item.name }}{% endif %}"
+  loop: "{{ docker_configs }}"
+  when: item is default_or_present
+  become: true

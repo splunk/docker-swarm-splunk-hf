@@ -15,7 +15,7 @@ volume_driver_option_device: "{{ lookup('vars', var_volume_driver_option_device)
 volume_create_path: "{{ lookup('vars', var_volume_create_path, default='') }}"
 
 # TODO - is there a better way to dynamically create a list of custom dicts?
-volumes_config: "{{ lookup('template', role_path+'/vars/volumes_config.yml.j2') | from_yaml }}"
+docker_service_templated_config: "{{ lookup('template', role_path+'/vars/docker_service_templated_config.yml.j2') | from_yaml }}"
 
 
 # combine common and host publish configs

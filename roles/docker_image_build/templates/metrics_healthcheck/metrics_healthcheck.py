@@ -1,13 +1,19 @@
 import sys
 import re
 import glob
+import json
 from datetime import datetime
 from dateutil import tz
 
-allowed_age = {{ healthcheck_allowed_age_seconds }}
-group = "{{ healthcheck_metrics_group }}"
-series = "{{ healthcheck_metrics_series }}"
-path = "{{ splunk_home }}/var/log/splunk/metrics.log*"
+config_filename = "{{ healthcheck_config_filename }}"
+
+with open(config_filename) as config_file:
+    config = json.load(config_file)
+
+allowed_age_seconds = config['allowed_age_seconds']
+group = config['group']
+series = config['series']
+path = config['path']
 
 file_names = glob.glob(path)
 if not file_names:
@@ -59,14 +65,14 @@ if earliest_overall_timestamp:
     earliest_overall_timestamp_epoch = int(earliest_overall_timestamp.strftime("%s"))
     # have we seen *enough* logs to actually check?
     earliest_overall_age = run_timestamp_epoch - earliest_overall_timestamp_epoch
-    if  earliest_overall_age > allowed_age:
+    if  earliest_overall_age > allowed_age_seconds:
         # have we seen *any* data we care about?
         if latest_group_series_timestamp:
             latest_group_series_timestamp_epoch = int(latest_group_series_timestamp.strftime("%s"))
             latest_group_series_age = run_timestamp_epoch - latest_group_series_timestamp_epoch
             print("{0}/{1} is {2} seconds old".format(group, series, latest_group_series_age))
             # have we seen recent data we care about?
-            if latest_group_series_age > allowed_age:
+            if latest_group_series_age > allowed_age_seconds:
                 exit(-1)
             else:
                 exit(0)
@@ -74,7 +80,7 @@ if earliest_overall_timestamp:
             print("{0}/{1} is at least {2} seconds old (no metrics seen for this combination)".format(group, series, earliest_overall_age))
             exit(-1)
     else:
-        print("Not bothering to check, we don't have {0} seconds of any group/series metrics logs".format(allowed_age))
+        print("Not bothering to check, we don't have {0} seconds of any group/series metrics logs".format(allowed_age_seconds))
         exit(0)
 else:
     print("Not bothering to check, we have no metrics logs at all")
