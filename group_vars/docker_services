@@ -10,7 +10,7 @@ healthcheck_config:
     path: "{{ splunk_home }}/var/log/splunk/metrics.log*"
 
 # content needs to be in a predictable state, so force sorting when converting to json
-healthcheck_config_json: "{{ healthcheck_config | to_json(sort_keys=True) | b64encode }}"
+healthcheck_config_json: "{{ healthcheck_config | to_json(sort_keys=True) }}"
 
 # this name needs to correspond to the template filename metrics_healthcheck/healthcheck_config.json
 healthcheck_config_filename: "{{ splunk_home }}/healthcheck_config.json"
@@ -24,7 +24,6 @@ role_docker_configs:
       # if content exists a docker config will be created/updated
       # if not, an already-defined docker config will be used
       content: "{{ healthcheck_config_json }}"
-      content_is_b64: yes
 
 # combine role, common, and host docker configs
 docker_configs: "{{ role_docker_configs + common_docker_configs + host_docker_configs }}"

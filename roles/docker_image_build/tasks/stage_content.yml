@@ -1,5 +1,6 @@
 - name: "copy content to {{ stage_item_dest }}"
   copy:
-    content: "{{ stage_item.content }}"
+    # pipe to the string filter here, which is as late as possible, to prevent ansible from interpreting content as yaml or json
+    content: "{{ stage_item.content | string }}"
     dest: "{{ stage_item_dest }}"
     mode: "{{ stage_item_config.mode | default(omit) }}"
