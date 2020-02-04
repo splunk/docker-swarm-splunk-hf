@@ -23,7 +23,8 @@ role_docker_configs:
       gid: "{{ splunk_group_id }}"
       # if content exists a docker config will be created/updated
       # if not, an already-defined docker config will be used
-      content: "{{ healthcheck_config_json }}"
+      # "| string" to prevent ansible from attempting to interpret the json as an object
+      content: "{{ healthcheck_config_json | string }}"
 
 # combine role, common, and host docker configs
 docker_configs: "{{ role_docker_configs + common_docker_configs + host_docker_configs }}"
