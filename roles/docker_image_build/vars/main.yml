@@ -50,21 +50,22 @@ role_stage_items:
     - src: "{{ role_path }}/templates/base"
       dest: splunk
       type: template
+      condition: "{{ install_splunk }}"
 
     - src: "{{ role_path }}/templates/production"
       dest: splunk
-      condition: "{{ production_image }}"
+      condition: "{{ install_splunk and production_image }}"
       type: template
 
     - src: "{{ role_path }}/templates/kvstore_disable"
       dest: splunk
       # leave kvstore enabled for dev images, since they are often used as all-in-one instances.
-      condition: "{{ kvstore_disabled and production_image }}"
+      condition: "{{ install_splunk and kvstore_disabled and production_image }}"
       type: template
 
     - src: "{{ role_path }}/templates/metrics_healthcheck"
       dest: splunk
-      condition: "{{ healthcheck_metrics_series is defined }}"
+      condition: "{{ install_splunk and healthcheck_metrics_series is defined }}"
       type: template
 
 # role_volumes is defined in group_vars/docker_services, since docker_service_deploy also needs it
