@@ -1,0 +1,3 @@
+# test templating a directory structure
+src: "hosts/{{ inventory_hostname }}/templates/basic_test"
+dest: "template_test_output"
