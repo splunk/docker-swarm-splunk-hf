@@ -1,3 +1,25 @@
 # test templating a directory structure
 src: "hosts/{{ inventory_hostname }}/templates/basic_test"
 dest: "template_test_output"
+
+# modes are passed to the file and template modules, so multiple formats are valid
+directory_mode: "0700"
+file_mode: "u=rw,g=,o="
+
+# test configuration, not part of ansible role
+_test_config:
+  templated_paths:
+    # all templated paths, files *and* directories
+    # add trailing slashes to directories for readability
+    - template_test_output/
+    - template_test_output/basic_template
+    - template_test_output/anotherlayer/
+    - template_test_output/anotherlayer/basic_template
+  # for convenience all files are the same template
+  # we effectively test templating once
+  # but also test that the recursion works as expected
+  # NOTE there is a newline in the template file
+  templated_file_contents: "This file was templated for template-directory.\n"
+  # mode must be specified as a string representation of an octal integer for testing
+  directory_mode: "0700"
+  file_mode: "0600"
