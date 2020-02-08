@@ -1,7 +1,7 @@
 # test copying a directory structure
 type: copy
 src: "hosts/{{ inventory_hostname }}/files/test_copy_directory"
-dest: "test_copy_output"
+dest: "/root"
 
 # modes are passed to the file and copy modules, so multiple formats are valid
 directory_mode: "0700"
@@ -12,10 +12,9 @@ _test_config:
   paths:
     # all copie paths, files *and* directories
     # add trailing slashes to directories for readability
-    - test_copy_output/
-    - test_copy_output/copied_file
-    - test_copy_output/anotherlayer/
-    - test_copy_output/anotherlayer/copied_file
+    - /root/copied_file
+    - /root/anotherlayer/
+    - /root/anotherlayer/copied_file
   # for convenience all files are the same content
   # NOTE there is a newline in the source file
   file_contents: "This file was copied.\n"

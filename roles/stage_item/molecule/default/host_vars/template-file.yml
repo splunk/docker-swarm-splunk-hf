@@ -5,7 +5,7 @@ src: "hosts/{{ inventory_hostname }}/templates"
 # but you can specify patterns if you want specific files
 pattern:
   - single_file.txt
-dest: "template_test_output"
+dest: "/root"
 # modes are passed to the file and template modules, so multiple formats are valid
 directory_mode: "u=rwx,g=,o="
 file_mode: "0600"
@@ -15,8 +15,7 @@ _test_config:
   paths:
     # all templated paths, files *and* directories
     # add trailing slashes to directories for readability
-    - template_test_output/
-    - template_test_output/single_file.txt
+    - /root/single_file.txt
   # NOTE there is a newline in the template file
   file_contents: "This file was templated for template-file.\n"
   # mode must be specified as a string representation of an octal integer for testing

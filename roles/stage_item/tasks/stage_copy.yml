@@ -15,13 +15,6 @@
     copy_src: "{{ copy_src }}/"
   when: copy_src_stat.stat.isdir
 
-- name: "{{ src }} create dest directory"
-  file:
-    path: "{{ dest }}"
-    state: directory
-    mode: "{{ directory_mode | default(omit) }}"
-    recurse: yes
-
 - name: "{{ src }} copy files"
   copy:
     src: "{{ copy_src }}"

@@ -1,7 +1,7 @@
 # test templating a directory structure
 type: template
 src: "hosts/{{ inventory_hostname }}/templates/basic_test"
-dest: "template_test_output"
+dest: "/root"
 
 # modes are passed to the file and template modules, so multiple formats are valid
 directory_mode: "0700"
@@ -12,10 +12,9 @@ _test_config:
   paths:
     # all templated paths, files *and* directories
     # add trailing slashes to directories for readability
-    - template_test_output/
-    - template_test_output/basic_template
-    - template_test_output/anotherlayer/
-    - template_test_output/anotherlayer/basic_template
+    - /root/basic_template
+    - /root/anotherlayer/
+    - /root/anotherlayer/basic_template
   # for convenience all files are the same template
   # we effectively test templating once
   # but also test that the recursion works as expected

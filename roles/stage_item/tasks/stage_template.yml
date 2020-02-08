@@ -10,13 +10,6 @@
     patterns: "{{ pattern | default(omit) }}"
   register: template_path_components
 
-- name: "{{ src }} create dest directory"
-  file:
-    path: "{{ dest }}"
-    state: directory
-    mode: "{{ directory_mode | default(omit) }}"
-    recurse: yes
-
 - name: "{{ src }} create template directories"
   file:
     path: "{{ dest }}/{{ item.path | relpath(src) }}"
