@@ -12,13 +12,13 @@ file_mode: "0600"
 
 # test configuration, not part of ansible role
 _test_config:
-  templated_paths:
+  paths:
     # all templated paths, files *and* directories
     # add trailing slashes to directories for readability
     - template_test_output/
     - template_test_output/single_file.txt
   # NOTE there is a newline in the template file
-  templated_file_contents: "This file was templated for template-file.\n"
+  file_contents: "This file was templated for template-file.\n"
   # mode must be specified as a string representation of an octal integer for testing
   directory_mode: "0700"
   file_mode: "0600"

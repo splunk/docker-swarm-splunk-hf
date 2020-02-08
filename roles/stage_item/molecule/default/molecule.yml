@@ -10,6 +10,8 @@ platforms:
     image: centos:7
   - name: template-file
     image: centos:7
+  - name: copy-directory
+    image: centos:7
 provisioner:
   name: ansible
   lint:

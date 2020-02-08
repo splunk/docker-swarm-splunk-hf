@@ -9,7 +9,7 @@ file_mode: "u=rw,g=,o="
 
 # test configuration, not part of ansible role
 _test_config:
-  templated_paths:
+  paths:
     # all templated paths, files *and* directories
     # add trailing slashes to directories for readability
     - template_test_output/
@@ -20,7 +20,7 @@ _test_config:
   # we effectively test templating once
   # but also test that the recursion works as expected
   # NOTE there is a newline in the template file
-  templated_file_contents: "This file was templated for template-directory.\n"
+  file_contents: "This file was templated for template-directory.\n"
   # mode must be specified as a string representation of an octal integer for testing
   directory_mode: "0700"
   file_mode: "0600"

@@ -1,22 +1,7 @@
-- name: "{{ stage_item_config.src }} get stat"
-  delegate_to: localhost
-  stat:
-    path: "{{ stage_item_config.src }}"
-  register: copy_src_stat
-
-# we have to use a variable name not passed to this tasks file if we want to override it
-- name: "{{ stage_item_config.src }} set copy_src"
-  set_fact:
-    copy_src: "{{ stage_item_config.src }}"
-
-# append / to copy_src if it's a directory, to copy only its contents, which is how the templating works as well
-- name: "{{ copy_src }} add trailing slash to src if it's a directory"
-  set_fact:
-    copy_src: "{{ copy_src }}/"
-  when: copy_src_stat.stat.isdir
-
-- name: "{{ copy_src }} copy files"
-  copy:
-    src: "{{ copy_src }}"
+- name: "{{ stage_item_config.src }} import new stage_copy"
+  include_role:
+    name: stage_items
+  vars:
+    type: copy
+    src: "{{ stage_item_config.src }}"
     dest: "{{ stage_item_dest }}"
-    mode: preserve
