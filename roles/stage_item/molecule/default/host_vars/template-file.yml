@@ -1,4 +1,5 @@
 # test templating a directory structure
+type: template
 # src *must* be a directory
 src: "hosts/{{ inventory_hostname }}/templates"
 # but you can specify patterns if you want specific files
