@@ -17,6 +17,8 @@ platforms:
     image: centos:7
   - name: copy-content
     image: centos:7
+  - name: copy-content-json
+    image: centos:7
   # deprecated type=content
   - name: content
     image: centos:7
