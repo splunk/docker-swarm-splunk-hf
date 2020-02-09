@@ -1,6 +1,6 @@
 - name: "{{ stage_item_config.src }} import new stage_copy"
   include_role:
-    name: stage_items
+    name: stage_item
   vars:
     type: copy
     src: "{{ stage_item_config.src }}"
