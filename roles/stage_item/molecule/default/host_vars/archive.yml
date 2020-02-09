@@ -1,0 +1,23 @@
+# test copying a file
+type: archive
+src: "hosts/{{ inventory_hostname }}/files/archive.tgz"
+dest: "/root"
+
+# this test uses the tarred permissions, but the tarred permissions are shown below
+#directory_mode: "0700"
+#mode: "u=rw,g=,o="
+
+# test configuration, not part of ansible role
+_test_config:
+  paths:
+    # all copie paths, files *and* directories
+    # add trailing slashes to directories for readability
+    - /root/unarchived_file
+    - /root/unarchived_directory
+    - /root/unarchived_directory/unarchived_file
+  # for convenience all files are the same content
+  # NOTE there is a newline in the source file
+  file_contents: "This file was in an archive.\n"
+  # mode must be specified as a string representation of an octal integer for testing
+  directory_mode: "0700"
+  mode: "0600"

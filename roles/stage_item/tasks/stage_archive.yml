@@ -1,0 +1,7 @@
+- name: "{{ src }} unarchive"
+  unarchive:
+    src: "{{ src }}"
+    dest: "{{ dest }}"
+    # mode is allowed here, but preferred to use an archive format
+    # that retains permissions
+    mode: "{{ mode | default(omit) }}"

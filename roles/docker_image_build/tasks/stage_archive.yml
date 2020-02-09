@@ -1,4 +1,0 @@
-- name: "{{ stage_item_config.src }} unarchive"
-  unarchive:
-    src: "{{ stage_item_config.src }}"
-    dest: "{{ stage_item_dest }}"
