@@ -1,0 +1,5 @@
+- name: "{{ dest }} create directory"
+  file:
+    path: "{{ dest }}"
+    state: directory
+    mode: "{{ mode | default(omit) }}"

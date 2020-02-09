@@ -26,6 +26,8 @@ platforms:
     image: centos:7
   - name: archive-override-mode
     image: centos:7
+  - name: directory
+    image: centos:7
 provisioner:
   name: ansible
   lint:

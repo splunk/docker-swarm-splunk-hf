@@ -11,13 +11,6 @@ def test_paths(host):
     host_vars = host.ansible.get_variables()
     test_vars = host_vars['_test_config']
 
-    content = test_vars['file_contents']
-
-    # modes are string representations of octal integers, so convert them
-    mode = int(test_vars['mode'], 8)
-    # directory_mode isn't required, as directories aren't always created
-    if 'directory_mode' in test_vars:
-        directory_mode = int(test_vars['directory_mode'], 8)
 
     paths = test_vars['paths']
 
@@ -34,9 +27,14 @@ def test_paths(host):
 
         if f.is_file:
             print("File content")
+            content = test_vars['file_contents']
             assert f.content_string == content
+            # modes are string representations of octal integers, so convert them
+            mode = int(test_vars['mode'], 8)
             print("File mode")
             assert f.mode == mode
         else:
             print("Directory mode")
+            # modes are string representations of octal integers, so convert them
+            directory_mode = int(test_vars['directory_mode'], 8)
             assert f.mode == directory_mode

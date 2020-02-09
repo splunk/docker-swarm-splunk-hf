@@ -1,4 +1,6 @@
-- name: "{{ stage_item_config.dest }} create directories"
-  file:
-    path: "{{ stage_item_dest }}"
-    state: directory
+- name: "{{ stage_item_config.dest }} create directory"
+  include_role:
+    name: stage_item
+  vars:
+    type: directory
+    dest: "{{ stage_item_dest }}"
