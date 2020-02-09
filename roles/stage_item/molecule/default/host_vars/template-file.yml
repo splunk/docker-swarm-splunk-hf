@@ -8,7 +8,7 @@ pattern:
 dest: "/root"
 # modes are passed to the file and template modules, so multiple formats are valid
 directory_mode: "u=rwx,g=,o="
-file_mode: "0600"
+mode: "0600"
 
 # test configuration, not part of ansible role
 _test_config:
@@ -20,4 +20,4 @@ _test_config:
   file_contents: "This file was templated for template-file.\n"
   # mode must be specified as a string representation of an octal integer for testing
   directory_mode: "0700"
-  file_mode: "0600"
+  mode: "0600"

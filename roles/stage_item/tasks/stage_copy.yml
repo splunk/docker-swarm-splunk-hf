@@ -27,5 +27,5 @@
     src: "{{ copy_src | default(omit) }}"
     content: "{% if content is defined %}{{ content | string }}{% else %}{{ omit }}{% endif %}"
     dest: "{{ dest }}"
-    mode: "{{ file_mode | default(omit) }}"
+    mode: "{{ mode | default(omit) }}"
     directory_mode: "{{ directory_mode | default(omit) }}"

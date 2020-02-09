@@ -23,6 +23,6 @@
   template:
     src: "{{ item.path }}"
     dest: "{{ dest }}/{{ item.path | relpath(src) }}"
-    mode: "{{ file_mode | default(omit) }}"
+    mode: "{{ mode | default(omit) }}"
   loop: "{{ template_path_components.files }}"
   when: not item.isdir and not item.islnk
