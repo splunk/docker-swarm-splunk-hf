@@ -14,8 +14,10 @@ def test_paths(host):
     content = test_vars['file_contents']
 
     # modes are string representations of octal integers, so convert them
-    directory_mode = int(test_vars['directory_mode'], 8)
     file_mode = int(test_vars['file_mode'], 8)
+    # directory_mode isn't required, as directories aren't always created
+    if 'directory_mode' in test_vars:
+        directory_mode = int(test_vars['directory_mode'], 8)
 
     paths = test_vars['paths']
 

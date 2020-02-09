@@ -1,0 +1,19 @@
+# test copying a file by content
+type: copy
+content: "This file was created from content.\n"
+dest: "/root/content_file"
+
+# modes are passed to the file and copy modules, so multiple formats are valid
+file_mode: "u=rw,g=,o="
+
+# test configuration, not part of ansible role
+_test_config:
+  paths:
+    # all copie paths, files *and* directories
+    # add trailing slashes to directories for readability
+    - /root/content_file
+  # for convenience all files are the same content
+  # NOTE there is a newline in the source file
+  file_contents: "This file was created from content.\n"
+  # mode must be specified as a string representation of an octal integer for testing
+  file_mode: "0600"

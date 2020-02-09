@@ -1,0 +1,7 @@
+- name: deprecation warning
+  fail:
+    msg: 'Stage item type "content" is deprecated.  Use type "copy" with content value instead.'
+  ignore_errors: yes
+
+- name: call sub-task
+  include_tasks: "stage_copy.yml"
