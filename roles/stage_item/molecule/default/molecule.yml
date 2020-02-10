@@ -9,25 +9,51 @@ platforms:
   # each platform tests a different type of stage_item
   - name: template-directory
     image: centos:7
+    groups: [ test_hosts ]
   - name: template-file
     image: centos:7
+    groups: [ test_hosts ]
   - name: copy-directory
     image: centos:7
+    groups: [ test_hosts ]
   - name: copy-file
     image: centos:7
+    groups: [ test_hosts ]
   - name: copy-content
     image: centos:7
+    groups: [ test_hosts ]
   - name: copy-content-json
     image: centos:7
+    groups: [ test_hosts ]
   # deprecated type=content
   - name: content
     image: centos:7
+    groups: [ test_hosts ]
   - name: archive
     image: centos:7
+    groups: [ test_hosts ]
   - name: archive-override-mode
     image: centos:7
+    groups: [ test_hosts ]
   - name: directory
     image: centos:7
+    groups: [ test_hosts ]
+  # remote-git won't have this role or tests run against it
+  - name: remote-git
+    image: centos:7
+    groups: [ supporting_hosts, git_servers ]
+    # defining a custom network enables DNS resolution of other containers
+    networks: [ { name: git } ]
+  - name: git
+    image: centos:7
+    groups: [ test_hosts, git_clients ]
+    # defining a custom network enables DNS resolution of other containers
+    networks: [ { name: git } ]
+  - name: git-specific_branch
+    image: centos:7
+    groups: [ test_hosts, git_clients ]
+    # defining a custom network enables DNS resolution of other containers
+    networks: [ { name: git } ]
 provisioner:
   name: ansible
   lint:

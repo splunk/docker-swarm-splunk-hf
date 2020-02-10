@@ -1,0 +1,64 @@
+---
+- name: Prepare remote-git sshd
+  hosts: git_servers
+  gather_facts: no
+  tasks:
+    - name: Install sshd
+      package:
+        name: openssh-server
+
+    # starting sshd via systemctl is gross in docker
+    # so we do things the hard way
+    - name: Create /var/run/sshd
+      file:
+        path: /var/run/sshd
+        state: directory
+    - name: Create ssh keys
+      command: "ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''"
+    - name: Start sshd
+      command: /usr/sbin/sshd
+
+    - name: create .ssh
+      file:
+        path: /root/.ssh
+        state: directory
+        mode: u=rwx,g=,o=
+        owner: root
+        group: root
+
+    - name: copy authorized_keys
+      copy:
+        src: "hosts/{{ inventory_hostname }}/files/authorized_keys"
+        dest: /root/.ssh
+        mode: u=rw,g=,o=
+        owner: root
+        group: root
+
+# why not reuse our own role to prep our git server?
+# since git_servers don't belong to the test_hosts group, this role wouldn't run
+# during converge
+- name: Prepare remote git repository
+  hosts: git_servers
+  gather_facts: no
+  roles:
+    - role: stage_item
+
+- name: Install git
+  hosts: git_servers,git_clients
+  gather_facts: no
+  tasks:
+    - name: Install git
+      package:
+        name: git
+
+- name: Add remote-git to known_hosts
+  hosts: git_clients
+  gather_facts: no
+  tasks:
+    - name: Create /root/.ssh
+      file:
+        path: /root/.ssh
+        state: directory
+        mode: u=rwx,g=,o=
+    - name: ssh-keyscan remote-git
+      shell: ssh-keyscan remote-git > /root/.ssh/known_hosts

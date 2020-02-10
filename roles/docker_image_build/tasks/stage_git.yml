@@ -1,40 +1,12 @@
-# not bothering with overrideable temp location here, since it's just for a tiny ssh key
-- name: "{{ stage_item_config.repo }} create temporary directory for ssh key"
-  tempfile:
-    state: directory
-  register: ssh_key_temp_location
-  when: key_file is defined
-
-- name: "{{ stage_item_config.repo }} copy ssh key"
-  copy:
-    src: "{{ key_file }}"
-    dest: "{{ ssh_key_temp_location.path }}/ssh_key"
-    mode: "u+r,go-rwx"
-  when: key_file is defined
-
-- name: "{{ stage_item_config.repo }} register temp ssh key path"
-  set_fact:
-    temp_ssh_key: "{{ ssh_key_temp_location.path }}/ssh_key"
-  when: key_file is defined
-
-- name: "{{ stage_item_config.repo }} stage git"
-  git:
+- name: "{{ stage_item_config.repo }} import new stage_git"
+  include_role:
+    name: stage_item
+  vars:
+    type: git
     repo: "{{ stage_item_config.repo }}"
-    key_file: "{{ temp_ssh_key | default(omit) }}"
-    accept_hostkey: "{{ accept_hostkey | default(omit) }}"
-    ssh_opts: "{{ ssh_opts | default(omit) }}"
     version: "{{ stage_item_config.version }}"
     dest: "{{ stage_item_dest }}"
-    # we don't keep .git anyway, so fetch the bare minimum
-    depth: 1
-
-- name: "{{ stage_item_config.repo }} remove .git"
-  file:
-    path: "{{ stage_item_dest }}/.git"
-    state: absent
-
-- name: "{{ stage_item_config.repo }} remove ssh_key"
-  file:
-    path: "{{ ssh_key_temp_location.path }}"
-    state: absent
-  when: key_file is defined
+    # these aren't really necessary, but including for explicitness
+    key_file: "{{ key_file | default(omit) }}"
+    accept_hostkey: "{{ accept_hostkey | default(omit) }}"
+    ssh_opts: "{{ ssh_opts | default(omit) }}"
