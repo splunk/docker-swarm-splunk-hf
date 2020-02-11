@@ -12,6 +12,8 @@
     state: directory
   register: ssh_key_temp_location
   when: stage_item.key_file is defined
+  # don't count this as a change
+  changed_when: false
 
 - name: "{{ stage_item.repo }} copy ssh key"
   copy:
@@ -19,6 +21,8 @@
     dest: "{{ ssh_key_temp_location.path }}/ssh_key"
     mode: "u+r,go-rwx"
   when: stage_item.key_file is defined
+  # don't count this as a change
+  changed_when: false
 
 - name: "{{ stage_item.repo }} register temp ssh key path"
   set_fact:
@@ -28,6 +32,9 @@
 - name: "{{ stage_item.repo }} stage git"
   git:
     repo: "{{ stage_item.repo }}"
+    # separate_git_dir added to help with idempotence tests
+    # but maybe it has some other use
+    separate_git_dir: "{{ stage_item.separate_git_dir | default(omit) }}"
     key_file: "{{ temp_ssh_key | default(omit) }}"
     accept_hostkey: "{{ stage_item.accept_hostkey | default(omit) }}"
     ssh_opts: "{{ stage_item.ssh_opts | default(omit) }}"
@@ -40,9 +47,15 @@
   file:
     path: "{{ stage_dest }}/.git"
     state: absent
+  # if we stored the git directory elsewhere, no reason to clean it up here
+  # plus cleaning it up means the idempotency check will fail due to the repo dest
+  # being present, not empty, and lacking a valid .git
+  when: stage_item.separate_git_dir is not defined
 
 - name: "{{ stage_item.repo }} remove ssh_key"
   file:
     path: "{{ ssh_key_temp_location.path }}"
     state: absent
   when: stage_item.key_file is defined
+  # don't count this as a change
+  changed_when: false

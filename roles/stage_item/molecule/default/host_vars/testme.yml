@@ -224,6 +224,8 @@ stage_items:
   # test staging files via git
   - type: git
     repo: ssh://remote-git/root/repo.git
+    # add separate_git_dir for idempotence testing needs, since it won't be removed
+    separate_git_dir: /root/.repo_git
     dest: splunk
     dest_sub_path: repo
     version: master
@@ -254,6 +256,8 @@ stage_items:
   # this is identical to the git host, but uses a different version to ensure versioning works
   - type: git
     repo: ssh://remote-git/root/repo.git
+    # add separate_git_dir for idempotence testing needs, since it won't be removed
+    separate_git_dir: /root/.repo_specific_branch.git
     dest: splunk
     dest_sub_path: repo_specific_branch
     version: specific_branch
