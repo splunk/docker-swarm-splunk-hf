@@ -41,7 +41,7 @@
   hosts: git_servers
   gather_facts: no
   roles:
-    - role: stage_item
+    - role: stage_items
 
 - name: Install git
   hosts: git_servers,git_clients

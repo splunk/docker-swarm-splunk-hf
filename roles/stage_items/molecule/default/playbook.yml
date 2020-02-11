@@ -2,4 +2,4 @@
 - name: Converge
   hosts: test_hosts
   roles:
-    - role: stage_item
+    - role: stage_items
