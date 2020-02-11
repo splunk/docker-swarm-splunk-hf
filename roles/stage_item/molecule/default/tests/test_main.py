@@ -28,12 +28,12 @@ def test_paths(host):
                 print("File content")
                 content = test_config['file_contents']
                 assert f.content_string == content
-                # modes are string representations of octal integers, convert them
+                # modes are string representation of octal integers, so convert
                 mode = int(test_config['mode'], 8)
                 print("File mode")
                 assert f.mode == mode
             else:
                 print("Directory mode")
-                # modes are string representations of octal integers, convert them
+                # modes are string representation of octal integers, so convert
                 directory_mode = int(test_config['directory_mode'], 8)
                 assert f.mode == directory_mode
