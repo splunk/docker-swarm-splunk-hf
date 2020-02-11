@@ -1,9 +1,15 @@
-# unarchive the remote-git config
-# NOTE this host isn't a test_host, so this role will not be automatically
-# applied as part of converge.  instead it is called from prepare.yml
-type: archive
-# remote-git-files.tgz has the git repo and .ssh/authorized_keys
-src: "hosts/{{ inventory_hostname }}/files/remote-git-files.tgz"
-dest: "/root"
+dest: /root
+staging_paths:
+  root:
+    is_base_path: yes
+
+stage_items:
+  # unarchive the remote-git config
+  # NOTE this host isn't a test_host, so this role will not be automatically
+  # applied as part of converge.  instead it is called from prepare.yml
+  - type: archive
+    # remote-git-files.tgz has the git repo and .ssh/authorized_keys
+    src: "hosts/{{ inventory_hostname }}/files/remote-git-files.tgz"
+    dest: root
 
 # no test configuration defined, since this is just a supporting instance

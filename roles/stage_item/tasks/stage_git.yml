@@ -1,40 +1,48 @@
+# dest_sub_path is handled in main.yml, but this task requires it, so make sure it was there
+- name: ensure dest_sub_path was set
+  assert:
+    that: "'dest_sub_path' in stage_item"
+    fail_msg: git staging requires dest_sub_path!
+    success_msg: dest_sub_path was set
+    quiet: yes
+
 # not bothering with overrideable temp location here, since it's just for a tiny ssh key
-- name: "{{ repo }} create temporary directory for ssh key"
+- name: "{{ stage_item.repo }} create temporary directory for ssh key"
   tempfile:
     state: directory
   register: ssh_key_temp_location
-  when: key_file is defined
+  when: stage_item.key_file is defined
 
-- name: "{{ repo }} copy ssh key"
+- name: "{{ stage_item.repo }} copy ssh key"
   copy:
-    src: "{{ key_file }}"
+    src: "{{ stage_item.key_file }}"
     dest: "{{ ssh_key_temp_location.path }}/ssh_key"
     mode: "u+r,go-rwx"
-  when: key_file is defined
+  when: stage_item.key_file is defined
 
-- name: "{{ repo }} register temp ssh key path"
+- name: "{{ stage_item.repo }} register temp ssh key path"
   set_fact:
     temp_ssh_key: "{{ ssh_key_temp_location.path }}/ssh_key"
-  when: key_file is defined
+  when: stage_item.key_file is defined
 
-- name: "{{ repo }} stage git"
+- name: "{{ stage_item.repo }} stage git"
   git:
-    repo: "{{ repo }}"
+    repo: "{{ stage_item.repo }}"
     key_file: "{{ temp_ssh_key | default(omit) }}"
-    accept_hostkey: "{{ accept_hostkey | default(omit) }}"
-    ssh_opts: "{{ ssh_opts | default(omit) }}"
-    version: "{{ version }}"
-    dest: "{{ dest }}/{{ repo_base_name }}"
+    accept_hostkey: "{{ stage_item.accept_hostkey | default(omit) }}"
+    ssh_opts: "{{ stage_item.ssh_opts | default(omit) }}"
+    version: "{{ stage_item.version }}"
+    dest: "{{ stage_dest }}"
     # we don't keep .git anyway, so fetch the bare minimum
     depth: 1
 
-- name: "{{ repo }} remove .git"
+- name: "{{ stage_item.repo }} remove .git"
   file:
-    path: "{{ dest }}/.git"
+    path: "{{ stage_dest }}/.git"
     state: absent
 
-- name: "{{ repo }} remove ssh_key"
+- name: "{{ stage_item.repo }} remove ssh_key"
   file:
     path: "{{ ssh_key_temp_location.path }}"
     state: absent
-  when: key_file is defined
+  when: stage_item.key_file is defined

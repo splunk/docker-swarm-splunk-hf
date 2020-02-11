@@ -1,2 +1,18 @@
-- name: call sub-task
-  include_tasks: "stage_{{ type }}.yml"
+- name: ensure dest staging_path exists
+  assert:
+    that: stage_item.dest in staging_paths
+    fail_msg: "{{ stage_item.dest }} is not a configured staging_path"
+    success_msg: "{{ stage_item.dest }} is a configured staging_path"
+    quiet: yes
+  loop: "{{ stage_items }}"
+  loop_control:
+    loop_var: stage_item
+  when: "('condition' not in stage_item) or (stage_item.condition)"
+
+- include_tasks: "stage_{{ stage_item.type }}.yml"
+  vars:
+    stage_dest: "{{ dest }}/{{ '' if 'is_base_path' in staging_paths[stage_item.dest] and staging_paths[stage_item.dest]['is_base_path'] else stage_item.dest }}/{{ stage_item.dest_sub_path | default('') }}"
+  loop: "{{ stage_items }}"
+  loop_control:
+    loop_var: stage_item
+  when: "('condition' not in stage_item) or (stage_item.condition)"

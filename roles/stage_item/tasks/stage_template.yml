@@ -1,4 +1,4 @@
-- name: "{{ src }} find path components to template"
+- name: "{{ stage_item.src }} find path components to template"
   # path components exist on the host running ansible, which isn't always the host doing the docker build
   delegate_to: localhost
   find:
@@ -6,23 +6,23 @@
     recurse: true
     hidden: yes
     paths:
-      - "{{ src }}"
-    patterns: "{{ pattern | default(omit) }}"
+      - "{{ stage_item.src }}"
+    patterns: "{{ stage_item.pattern | default(omit) }}"
   register: template_path_components
 
-- name: "{{ src }} create template directories"
+- name: "{{ stage_item.src }} create template directories"
   file:
-    path: "{{ dest }}/{{ item.path | relpath(src) }}"
+    path: "{{ stage_dest }}/{{ item.path | relpath(stage_item.src) }}"
     state: directory
-    mode: "{{ directory_mode | default(omit) }}"
+    mode: "{{ stage_item.directory_mode | default(omit) }}"
     recurse: yes
   loop: "{{ template_path_components.files }}"
   when: item.isdir
 
-- name: "{{ src }} template files"
+- name: "{{ stage_item.src }} template files"
   template:
     src: "{{ item.path }}"
-    dest: "{{ dest }}/{{ item.path | relpath(src) }}"
-    mode: "{{ mode | default(omit) }}"
+    dest: "{{ stage_dest }}/{{ item.path | relpath(stage_item.src) }}"
+    mode: "{{ stage_item.mode | default(omit) }}"
   loop: "{{ template_path_components.files }}"
   when: not item.isdir and not item.islnk

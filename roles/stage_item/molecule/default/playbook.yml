@@ -1,5 +1,5 @@
 ---
 - name: Converge
-  hosts: all
+  hosts: test_hosts
   roles:
     - role: stage_item

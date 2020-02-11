@@ -1,31 +1,50 @@
 - name: validate src or content presence
   assert:
     that:
-      - src is defined or content is defined
+      - stage_item.src is defined or stage_item.content is defined
+    fail_msg: neither src nor content was defined!
+    success_msg: either src or content was defined
+    quiet: yes
 
-- name: "{{ src }} get stat"
+- name: "{{ stage_item.src }} get stat"
   delegate_to: localhost
   stat:
-    path: "{{ src }}"
+    path: "{{ stage_item.src }}"
   register: copy_src_stat
-  when: src is defined
+  when: stage_item.src is defined
+
+- name: "{{ stage_item.src }} exists check"
+  assert:
+    that: copy_src_stat.stat.exists
+    fail_msg: "{{ stage_item.src }} does not exist!"
+    success_msg: "{{ stage_item.src }} exists"
+    quiet: yes
+  when: stage_item.src is defined
 
 # we have to use a variable name not passed to this tasks file if we want to override it
-- name: "{{ src }} set copy_src"
+- name: "{{ stage_item.src }} set copy_src"
   set_fact:
-    copy_src: "{{ src }}"
-  when: src is defined
+    copy_src: "{{ stage_item.src }}"
+  when: stage_item.src is defined
 
 # append / to copy_src if it's a directory, to copy only its contents, which is how the templating works as well
-- name: "{{ src }} add trailing slash to src if it's a directory"
+- name: "{{ stage_item.src }} add trailing slash to src if it's a directory"
   set_fact:
     copy_src: "{{ copy_src }}/"
-  when: src is defined and copy_src_stat.stat.isdir
+  when: stage_item.src is defined and copy_src_stat.stat.isdir
 
-- name: "{{ src }} copy files"
+- name: "{{ stage_item.src }} copy file"
   copy:
-    src: "{{ copy_src | default(omit) }}"
-    content: "{% if content is defined %}{{ content | string }}{% else %}{{ omit }}{% endif %}"
-    dest: "{{ dest }}"
-    mode: "{{ mode | default(omit) }}"
-    directory_mode: "{{ directory_mode | default(omit) }}"
+    src: "{{ copy_src }}"
+    dest: "{{ stage_dest }}"
+    mode: "{{ stage_item.mode | default(omit) }}"
+    directory_mode: "{{ stage_item.directory_mode | default(omit) }}"
+  when: stage_item.src is defined
+
+- name: "copy file from content"
+  copy:
+    content: "{{ stage_item.content | string }}"
+    dest: "{{ stage_dest }}"
+    mode: "{{ stage_item.mode | default(omit) }}"
+    directory_mode: "{{ stage_item.directory_mode | default(omit) }}"
+  when: stage_item.content is defined
