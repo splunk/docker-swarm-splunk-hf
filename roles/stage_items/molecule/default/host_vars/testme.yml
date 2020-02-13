@@ -5,6 +5,7 @@ staging_paths:
     build:
       is_base_path: true
     splunk: {}
+    git: {}
 
 # dest points to a temporary path
 # it is passed from the calling role
@@ -168,7 +169,7 @@ stage_items:
         # all copie paths, files *and* directories
         # add trailing slashes to directories for readability
         - /root/staged_items/splunk/unarchived_file
-        - /root/staged_items/splunk/unarchived_directory
+        - /root/staged_items/splunk/unarchived_directory/
         - /root/staged_items/splunk/unarchived_directory/unarchived_file
       # for convenience all files are the same content
       # NOTE there is a newline in the source file
@@ -193,7 +194,7 @@ stage_items:
         # all copie paths, files *and* directories
         # add trailing slashes to directories for readability
         - /root/staged_items/unarchived_file
-        - /root/staged_items/unarchived_directory
+        - /root/staged_items/unarchived_directory/
         - /root/staged_items/unarchived_directory/unarchived_file
       # for convenience all files are the same content
       # NOTE there is a newline in the source file
@@ -240,9 +241,9 @@ stage_items:
       paths:
         # all copie paths, files *and* directories
         # add trailing slashes to directories for readability
-        - /root/staged_items/splunk/repo
+        - /root/staged_items/splunk/repo/
         - /root/staged_items/splunk/repo/cloned_file
-        - /root/staged_items/splunk/repo/cloned_directory
+        - /root/staged_items/splunk/repo/cloned_directory/
         - /root/staged_items/splunk/repo/cloned_directory/cloned_file
       # for convenience all files are the same content
       # NOTE there is a newline in the source file
@@ -272,13 +273,44 @@ stage_items:
       paths:
         # all copie paths, files *and* directories
         # add trailing slashes to directories for readability
-        - /root/staged_items/splunk/repo_specific_branch
+        - /root/staged_items/splunk/repo_specific_branch/
         - /root/staged_items/splunk/repo_specific_branch/cloned_file
-        - /root/staged_items/splunk/repo_specific_branch/cloned_directory
+        - /root/staged_items/splunk/repo_specific_branch/cloned_directory/
         - /root/staged_items/splunk/repo_specific_branch/cloned_directory/cloned_file
       # for convenience all files are the same content
       # NOTE there is a newline in the source file
       file_contents: "This file was cloned from a git repo's specific_branch branch.\n"
+      # define the expected modes, though they aren't controlled by our configuration or playbook
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0755"
+      mode: "0644"
+
+  # test staging files via git
+  # this is identical to the git host, but doesn't specify dest_sub_path, instead assuming dest is empty
+  - type: git
+    repo: ssh://remote-git/root/repo.git
+    # add separate_git_dir for idempotence testing needs, since it won't be removed
+    #separate_git_dir: /root/.repo_specific_branch.git
+    separate_git_dir: /root/.no_dest_sub_key.git
+    dest: git
+    version: master
+    key_file: "hosts/{{ inventory_hostname }}/files/id_rsa"
+
+    # the git module doesn't accept the mode parameters
+    #directory_mode:
+    #mode:
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/git/cloned_file
+        - /root/staged_items/git/cloned_directory/
+        - /root/staged_items/git/cloned_directory/cloned_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was cloned from a git repo's master branch.\n"
       # define the expected modes, though they aren't controlled by our configuration or playbook
       # mode must be specified as a string representation of an octal integer for testing
       directory_mode: "0755"

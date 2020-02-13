@@ -1,11 +1,3 @@
-# dest_sub_path is handled in main.yml, but this task requires it, so make sure it was there
-- name: ensure dest_sub_path was set
-  assert:
-    that: "'dest_sub_path' in stage_item"
-    fail_msg: git staging requires dest_sub_path!
-    success_msg: dest_sub_path was set
-    quiet: yes
-
 # not bothering with overrideable temp location here, since it's just for a tiny ssh key
 - name: "{{ stage_item.repo }} create temporary directory for ssh key"
   tempfile:
