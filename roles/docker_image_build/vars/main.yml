@@ -58,15 +58,15 @@ role_stage_items:
       # this includes entrypoint.sh, which needs to be +x, and is so in git
       mode: preserve
 
-    - src: "{{ docker_image_build_role_path }}/templates/production"
+    - src: "{{ docker_image_build_role_path }}/templates/primary_build"
       dest: splunk
-      condition: "{{ install_splunk and build_vars.production_image }}"
+      condition: "{{ install_splunk and build_vars.primary_build }}"
       type: template
 
     - src: "{{ docker_image_build_role_path }}/templates/kvstore_disable"
       dest: splunk
-      # leave kvstore enabled for dev images, since they are often used as all-in-one instances.
-      condition: "{{ install_splunk and kvstore_disabled and build_vars.production_image }}"
+      # leave kvstore enabled for non-primary images, since they are often used as all-in-one instances.
+      condition: "{{ install_splunk and kvstore_disabled and build_vars.primary_build }}"
       type: template
 
     - src: "{{ docker_image_build_role_path }}/templates/metrics_healthcheck"

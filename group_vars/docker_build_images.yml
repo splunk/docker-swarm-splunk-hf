@@ -1,3 +1,11 @@
+build_variants:
+  - build_vars:
+      primary_build: true
+      tag: "{{ tags.build }}"
+  - build_vars:
+      primary_build: false
+      tag: dev
+
 role_volumes:
     # image_volumes get defined as VOLUMEs in Dockerfile
     - mount_type: image_volume
