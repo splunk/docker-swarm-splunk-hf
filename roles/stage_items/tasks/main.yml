@@ -1,3 +1,9 @@
+- name: condition sanity check - failure indicates likely typo in condition
+  debug:
+    msg: "{{ item.condition }}"
+  loop: "{{ stage_items }}"
+  when: "'condition' in item"
+
 - name: ensure dest staging_path exists
   assert:
     that: stage_item.dest in staging_paths

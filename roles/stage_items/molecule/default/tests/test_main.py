@@ -37,3 +37,10 @@ def test_paths(host):
                 # modes are string representation of octal integers, so convert
                 directory_mode = int(test_config['directory_mode'], 8)
                 assert f.mode == directory_mode
+
+        if 'absent_paths' in test_config:
+            for path in test_config['absent_paths']:
+                print("Path: {0}".format(path))
+
+                f = host.file(path)
+                assert not f.exists

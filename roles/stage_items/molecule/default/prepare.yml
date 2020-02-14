@@ -1,5 +1,5 @@
 ---
-- name: Prepare remote-git sshd
+- name: Prepare remote-git
   hosts: git_servers
   gather_facts: no
   tasks:
@@ -34,14 +34,10 @@
         owner: root
         group: root
 
-# why not reuse our own role to prep our git server?
-# since git_servers don't belong to the test_hosts group, this role wouldn't run
-# during converge
-- name: Prepare remote git repository
-  hosts: git_servers
-  gather_facts: no
-  roles:
-    - role: stage_items
+    - name: install remote-git-files.tgz
+      unarchive:
+        src: "hosts/{{ inventory_hostname }}/files/remote-git-files.tgz"
+        dest: /root
 
 - name: Install git
   hosts: git_servers,git_clients
@@ -51,10 +47,11 @@
       package:
         name: git
 
-- name: Add remote-git to known_hosts
+- name: configure git_clients
   hosts: git_clients
   gather_facts: no
   tasks:
+    # add remote-git to known_hosts
     - name: Create /root/.ssh
       file:
         path: /root/.ssh
@@ -62,3 +59,11 @@
         mode: u=rwx,g=,o=
     - name: ssh-keyscan remote-git
       shell: ssh-keyscan remote-git > /root/.ssh/known_hosts
+
+    # this step is required to be done before this role is called
+    # it is the responsibility of the calling playbook/role to pass a dest that exists
+    # but for testing we'll just create it here
+    - name: Create dest
+      file:
+        path: "{{ dest }}"
+        state: directory

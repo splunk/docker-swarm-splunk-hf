@@ -11,12 +11,18 @@ staging_paths:
 # it is passed from the calling role
 dest: /root/staged_items
 
+# use this to test condition functionality
+test_condition_values:
+  - true_condition
+
 stage_items:
-  # template a directory structure
+  # template a directory structure with true condition
   - type: template
     src: "hosts/{{ inventory_hostname }}/templates/basic_test"
     # dest points to a staging_path
     dest: splunk
+    # this should evaluate to true
+    condition: "{{ 'true_condition' in test_condition_value }}"
 
     # modes are passed to the file and template modules, so multiple formats are valid
     directory_mode: "0700"
@@ -37,6 +43,19 @@ stage_items:
       # mode must be specified as a string representation of an octal integer for testing
       directory_mode: "0700"
       mode: "0600"
+
+  # skip templating due to false condition
+  - type: template
+    src: "hosts/{{ inventory_hostname }}/templates/basic_test"
+    dest: splunk
+    dest_sub_path: nothinghere
+    # this should evaluate to false
+    condition: "{{ 'false_condition' in test_condition_values }}"
+
+    _test_config:
+      paths: []
+      absent_paths:
+        - /root/staged_items/splunk/nothinghere
 
 
   # template a single file
