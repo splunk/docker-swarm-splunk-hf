@@ -1,25 +1,33 @@
-# not bothering with overrideable temp location here, since it's just for a tiny ssh key
+# always set this value, then later check that its value is not omit
+- name: "{{ stage_item.repo }} set ssh_key_file"
+  set_fact:
+    git_ssh_key_file: "{{ stage_item.key_file | default(key_file) | default(omit) }}"
+  # don't count this as a change
+  changed_when: false
+
 - name: "{{ stage_item.repo }} create temporary directory for ssh key"
   tempfile:
     state: directory
+    # place ssh key in the role working area (not stage_dest, which is this task's working area)
+    path: "{{ dest }}"
   register: ssh_key_temp_location
-  when: stage_item.key_file is defined
+  when: git_ssh_key_file != omit
   # don't count this as a change
   changed_when: false
 
 - name: "{{ stage_item.repo }} copy ssh key"
   copy:
-    src: "{{ stage_item.key_file }}"
+    src: "{{ git_ssh_key_file }}"
     dest: "{{ ssh_key_temp_location.path }}/ssh_key"
     mode: "u+r,go-rwx"
-  when: stage_item.key_file is defined
+  when: git_ssh_key_file != omit
   # don't count this as a change
   changed_when: false
 
 - name: "{{ stage_item.repo }} register temp ssh key path"
   set_fact:
     temp_ssh_key: "{{ ssh_key_temp_location.path }}/ssh_key"
-  when: stage_item.key_file is defined
+  when: git_ssh_key_file != omit
 
 - name: "{{ stage_item.repo }} stage git"
   git:
@@ -48,6 +56,6 @@
   file:
     path: "{{ ssh_key_temp_location.path }}"
     state: absent
-  when: stage_item.key_file is defined
+  when: git_ssh_key_file != omit
   # don't count this as a change
   changed_when: false

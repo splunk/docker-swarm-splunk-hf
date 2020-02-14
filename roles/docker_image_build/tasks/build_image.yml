@@ -1,0 +1,32 @@
+- name: create temporary work directory
+  tempfile:
+    state: directory
+    prefix: "{{ docker_build_directory_prefix }}"
+    path: "{{ docker_build_path }}"
+  register: docker_build_directory
+
+- block:
+    - include_tasks: stage_build.yml
+    - include_tasks: docker_build.yml
+
+  rescue:
+    - name: clean failed failed temporary work
+      file:
+        path: "{{ docker_build_directory.path }}"
+        state: absent
+      tags:
+        - cleanup
+        - failed_cleanup
+
+    - name: fail in rescue to prevent continuation
+      fail:
+        msg: stopping after cleaning failed temporary work
+      
+  always:
+    - name: clean temporary work directory
+      file:
+        path: "{{ docker_build_directory.path }}"
+        state: absent
+      tags:
+        - cleanup
+        - successful_cleanup

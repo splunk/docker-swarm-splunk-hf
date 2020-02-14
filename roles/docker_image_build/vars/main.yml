@@ -40,30 +40,36 @@ role_staging_paths:
       owner: "{{ splunk_user_id }}"
       group: "{{ splunk_group_id }}"
 
+# our role path needs to be determinable even from other roles which this role included
+# going up a directory and into this role from there ensures we can always get where we need to go
+docker_image_build_role_path: "{{ role_path }}/../docker_image_build"
+
 role_stage_items:
       # build is the top level, which contains Dockerfile and all items Dockerfile refers to
-    - src: "{{ role_path }}/templates/build"
+    - src: "{{ docker_image_build_role_path }}/templates/build"
       dest: build
       type: template
 
       # base is things that go into every splunk install
-    - src: "{{ role_path }}/templates/base"
+    - src: "{{ docker_image_build_role_path }}/templates/base"
       dest: splunk
       type: template
       condition: "{{ install_splunk }}"
+      # this includes entrypoint.sh, which needs to be +x, and is so in git
+      mode: preserve
 
-    - src: "{{ role_path }}/templates/production"
+    - src: "{{ docker_image_build_role_path }}/templates/production"
       dest: splunk
-      condition: "{{ install_splunk and production_image }}"
+      condition: "{{ install_splunk and build_vars.production_image }}"
       type: template
 
-    - src: "{{ role_path }}/templates/kvstore_disable"
+    - src: "{{ docker_image_build_role_path }}/templates/kvstore_disable"
       dest: splunk
       # leave kvstore enabled for dev images, since they are often used as all-in-one instances.
-      condition: "{{ install_splunk and kvstore_disabled and production_image }}"
+      condition: "{{ install_splunk and kvstore_disabled and build_vars.production_image }}"
       type: template
 
-    - src: "{{ role_path }}/templates/metrics_healthcheck"
+    - src: "{{ docker_image_build_role_path }}/templates/metrics_healthcheck"
       dest: splunk
       condition: "{{ install_splunk and healthcheck_metrics_series is defined }}"
       type: template

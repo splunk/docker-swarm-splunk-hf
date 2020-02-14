@@ -9,9 +9,3 @@
     - role: docker_image_build
       delegate_to: "{{ groups['docker_build_hosts'] | first }}"
       when: "'build' in tags"
-      production_image: yes
-
-    - role: docker_image_build
-      delegate_to: "{{ groups['docker_build_hosts'] | first }}"
-      when: "'build' in tags"
-      production_image: no
