@@ -19,6 +19,9 @@ host_indexed_fields: {}
 common_run_commands: []
 host_run_commands: []
 
+common_build_variants: []
+host_build_variants: []
+
 # these had to be placed in group_vars/docker_services such that they are also available to docker_service_deploy
 #common_volumes: []
 #host_volumes: []

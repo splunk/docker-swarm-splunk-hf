@@ -1,0 +1,18 @@
+- name: "{{ build_vars.tag }} untag image prior to tag/push to force the push during the tag"
+  docker_image:
+    name: "{{ repository_deploy_image }}"
+    state: absent
+  become: yes
+  when: build_vars.push_when | default(false)
+
+- name: "{{ build_vars.tag }} perform docker push"
+  docker_image:
+    name: "{{ docker_image_name }}"
+    tag: "{{ build_vars.tag }}"
+    # source=local causes the image not to be rebuilt or pulled
+    source: local
+    # to trigger a push of an existing image/tag, the key seems to be for repository to be set to <registry>/<image>
+    repository: "{{ repository }}/{{ docker_image_name }}"
+    push: yes
+  become: yes
+  when: build_vars.push_when | default(false)

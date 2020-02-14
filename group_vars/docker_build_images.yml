@@ -1,10 +1,11 @@
-build_variants:
+role_build_variants:
   - build_vars:
       primary_build: true
-      tag: "{{ tags.build }}"
+      tag: "{{ version }}"
+      push_when: "{{ true }}"
   - build_vars:
       primary_build: false
-      tag: dev
+      tag: standalone
 
 role_volumes:
     # image_volumes get defined as VOLUMEs in Dockerfile
