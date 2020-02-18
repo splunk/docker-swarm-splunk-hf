@@ -5,7 +5,7 @@ role_build_variants:
       push_when: "{{ true }}"
   - build_vars:
       primary_build: false
-      tag: standalone
+      tag: "{{ version }}-standalone"
 
 role_volumes:
     # image_volumes get defined as VOLUMEs in Dockerfile
