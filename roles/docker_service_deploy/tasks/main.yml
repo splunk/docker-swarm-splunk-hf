@@ -7,7 +7,7 @@
     volume_type: "{{ volume_item.volume_type }}"
     volume_owner: "{{ volume_item.owner | default(omit) }}"
     volume_group: "{{ volume_item.group | default(omit) }}"
-  when: "(volume_item.mount_type == 'service_volume') and (state == 'present') and (volume_item is default_or_present)"
+  when: "(volume_item.mount_type == 'service_volume') and (state|default('present') == 'present') and (volume_item is default_or_present)"
   loop: "{{ volumes }}"
   # the _volume.yml tasks also use loop, so here we use a different loop_var
   loop_control:
@@ -49,7 +49,7 @@
   include_tasks: remove_volume.yml
   vars:
     volume_name: "{{ volume_item.name }}"
-  when: "(volume_item.mount_type == 'service_volume') and ((state == 'absent') or (volume_item is defined_absent))"
+  when: "(volume_item.mount_type == 'service_volume') and ((state|default('present') == 'absent') or (volume_item is defined_absent))"
   loop: "{{ volumes }}"
   # the _volume.yml tasks also use loop, so here we use a different loop_var
   loop_control:
