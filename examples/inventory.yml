@@ -33,6 +33,18 @@ all:
       # each image we want to build is defined as a host, and thus can make use of ansible's variable precedence
       hosts:
 
-        # this image doesn't do much other than run splunk
+        # don't do much other than run splunk
         hello_swarm_forwarder:
           version: 1.0.0
+
+        # enable healthcheck for the _internal index
+        internal_healthcheck_forwarder:
+          version: 1.0.0
+          # perform the check every 30 seconds
+          healthcheck_interval_seconds: 30
+
+          # expect to see non-zero thruput for the _internal index no older than 60 seconds
+          # the metrics healthcheck lets you pick the group and series to monitor in metrics.log
+          healthcheck_metrics_group: per_index_thruput
+          healthcheck_metrics_series: _internal
+          healthcheck_allowed_age_seconds: 60
