@@ -1,0 +1,8 @@
+- name: "{{ stage_item_config.src }} import new stage_content"
+  include_role:
+    name: stage_item
+  vars:
+    type: content
+    content: "{{ stage_item.content }}"
+    dest: "{{ stage_item_dest }}"
+    mode: "{{ stage_item_config.mode | default(omit) }}"

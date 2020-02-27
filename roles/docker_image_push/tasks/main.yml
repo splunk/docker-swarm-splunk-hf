@@ -1,0 +1,7 @@
+- name: run push_image
+  include_tasks: push_image.yml
+  vars:
+    build_vars: "{{ build_variant.build_vars }}"
+  loop: "{{ build_variants }}"
+  loop_control:
+    loop_var: build_variant

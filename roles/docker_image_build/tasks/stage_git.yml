@@ -1,0 +1,12 @@
+- name: "{{ stage_item_config.repo }} import new stage_git"
+  include_role:
+    name: stage_item
+  vars:
+    type: git
+    repo: "{{ stage_item_config.repo }}"
+    version: "{{ stage_item_config.version }}"
+    dest: "{{ stage_item_dest }}"
+    # these aren't really necessary, but including for explicitness
+    key_file: "{{ key_file | default(omit) }}"
+    accept_hostkey: "{{ accept_hostkey | default(omit) }}"
+    ssh_opts: "{{ ssh_opts | default(omit) }}"

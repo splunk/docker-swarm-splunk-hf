@@ -1,0 +1,7 @@
+- name: "{{ stage_item.src }} unarchive"
+  unarchive:
+    src: "{{ stage_item.src }}"
+    dest: "{{ stage_dest }}"
+    # mode is allowed here, but preferred to use an archive format
+    # that retains permissions
+    mode: "{{ stage_item.mode | default(omit) }}"

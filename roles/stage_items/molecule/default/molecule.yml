@@ -1,0 +1,29 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: testme
+    image: centos:7
+    groups: [ test_hosts, git_clients ]
+    # defining a custom network enables DNS resolution of other containers
+    networks: [ { name: testnetwork } ]
+  # remote-git won't have this role or tests run against it
+  - name: remote-git
+    image: centos:7
+    groups: [ supporting_hosts, git_servers ]
+    # defining a custom network enables DNS resolution of other containers
+    networks: [ { name: testnetwork } ]
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
+  options:
+    s: true

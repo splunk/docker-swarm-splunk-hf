@@ -1,0 +1,1 @@
+build_variants: "{{ role_build_variants + common_build_variants + host_build_variants }}"

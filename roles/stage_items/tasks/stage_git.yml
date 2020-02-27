@@ -1,0 +1,61 @@
+# always set this value, then later check that its value is not omit
+- name: "{{ stage_item.repo }} set ssh_key_file"
+  set_fact:
+    git_ssh_key_file: "{{ stage_item.key_file | default(key_file) | default(omit) }}"
+  # don't count this as a change
+  changed_when: false
+
+- name: "{{ stage_item.repo }} create temporary directory for ssh key"
+  tempfile:
+    state: directory
+    # place ssh key in the role working area (not stage_dest, which is this task's working area)
+    path: "{{ dest }}"
+  register: ssh_key_temp_location
+  when: git_ssh_key_file != omit
+  # don't count this as a change
+  changed_when: false
+
+- name: "{{ stage_item.repo }} copy ssh key"
+  copy:
+    src: "{{ git_ssh_key_file }}"
+    dest: "{{ ssh_key_temp_location.path }}/ssh_key"
+    mode: "u+r,go-rwx"
+  when: git_ssh_key_file != omit
+  # don't count this as a change
+  changed_when: false
+
+- name: "{{ stage_item.repo }} register temp ssh key path"
+  set_fact:
+    temp_ssh_key: "{{ ssh_key_temp_location.path }}/ssh_key"
+  when: git_ssh_key_file != omit
+
+- name: "{{ stage_item.repo }} stage git"
+  git:
+    repo: "{{ stage_item.repo }}"
+    # separate_git_dir added to help with idempotence tests
+    # but maybe it has some other use
+    separate_git_dir: "{{ stage_item.separate_git_dir | default(omit) }}"
+    key_file: "{{ temp_ssh_key | default(omit) }}"
+    accept_hostkey: "{{ stage_item.accept_hostkey | default(omit) }}"
+    ssh_opts: "{{ stage_item.ssh_opts | default(omit) }}"
+    version: "{{ stage_item.version }}"
+    dest: "{{ stage_dest }}"
+    # we don't keep .git anyway, so fetch the bare minimum
+    depth: 1
+
+- name: "{{ stage_item.repo }} remove .git"
+  file:
+    path: "{{ stage_dest }}/.git"
+    state: absent
+  # if we stored the git directory elsewhere, no reason to clean it up here
+  # plus cleaning it up means the idempotency check will fail due to the repo dest
+  # being present, not empty, and lacking a valid .git
+  when: stage_item.separate_git_dir is not defined
+
+- name: "{{ stage_item.repo }} remove ssh_key"
+  file:
+    path: "{{ ssh_key_temp_location.path }}"
+    state: absent
+  when: git_ssh_key_file != omit
+  # don't count this as a change
+  changed_when: false

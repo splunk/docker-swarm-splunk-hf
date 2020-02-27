@@ -1,0 +1,50 @@
+- name: validate src or content presence
+  assert:
+    that:
+      - stage_item.src is defined or stage_item.content is defined
+    fail_msg: neither src nor content was defined!
+    success_msg: either src or content was defined
+    quiet: yes
+
+- name: "{{ stage_item.src }} get stat"
+  delegate_to: localhost
+  stat:
+    path: "{{ stage_item.src }}"
+  register: copy_src_stat
+  when: stage_item.src is defined
+
+- name: "{{ stage_item.src }} exists check"
+  assert:
+    that: copy_src_stat.stat.exists
+    fail_msg: "{{ stage_item.src }} does not exist!"
+    success_msg: "{{ stage_item.src }} exists"
+    quiet: yes
+  when: stage_item.src is defined
+
+# we have to use a variable name not passed to this tasks file if we want to override it
+- name: "{{ stage_item.src }} set copy_src"
+  set_fact:
+    copy_src: "{{ stage_item.src }}"
+  when: stage_item.src is defined
+
+# append / to copy_src if it's a directory, to copy only its contents, which is how the templating works as well
+- name: "{{ stage_item.src }} add trailing slash to src if it's a directory"
+  set_fact:
+    copy_src: "{{ copy_src }}/"
+  when: stage_item.src is defined and copy_src_stat.stat.isdir
+
+- name: "{{ stage_item.src }} copy file"
+  copy:
+    src: "{{ copy_src }}"
+    dest: "{{ stage_dest }}"
+    mode: "{{ stage_item.mode | default(omit) }}"
+    directory_mode: "{{ stage_item.directory_mode | default(omit) }}"
+  when: stage_item.src is defined
+
+- name: "copy file from content"
+  copy:
+    content: "{{ stage_item.content | string }}"
+    dest: "{{ stage_dest }}"
+    mode: "{{ stage_item.mode | default(omit) }}"
+    directory_mode: "{{ stage_item.directory_mode | default(omit) }}"
+  when: stage_item.content is defined

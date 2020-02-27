@@ -1,0 +1,22 @@
+- name: "create docker service with {% if intermediate_configs is defined and intermediate_configs %}intermediate{% else %}final{% endif %} configs"
+  docker_swarm_service:
+    image: "{{ repository_deploy_image }}"
+    name: "{{ inventory_hostname }}"
+    hostname: "{{ inventory_hostname }}"
+    limit_cpu: "{{ limit_cpu }}"
+    limit_memory: "{{ limit_memory }}"
+    restart_policy: "{{ restart_policy }}"
+    publish: "{{ publish | default(omit) }}"
+    replicas: "{{ replicas | default(omit) }}"
+    # XXX - stupid naming
+    mounts: "{{ docker_service_templated_config.volumes }}"
+    configs: "{% if intermediate_configs is defined and intermediate_configs %}{{ docker_service_templated_config.intermediate_configs }}{% else %}{{ docker_service_templated_config.configs }}{% endif %}"
+    state: "{{ state|default(omit) }}"
+    # require user to be specified, because defaults to root pre-2.8, overriding the image configuration
+    user: "{{ user }}"
+    log_driver: "{{ log_driver | default(omit) }}"
+    log_driver_options: "{{ log_driver_options | default(omit) }}"
+  become: true
+  # tagged to allow skipping to allow only management of volumes
+  tags:
+    - service

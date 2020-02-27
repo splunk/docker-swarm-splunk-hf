@@ -1,0 +1,24 @@
+# the volume_ variables are templated in this role's vars/main.yml
+
+- name: create volume's persistent storage path
+  file:
+    path: "{{ volume_create_path }}"
+    state: directory
+    owner: "{{ volume_owner }}"
+    group: "{{ volume_group }}"
+  when: volume_create_path != ''
+  become: true
+
+# each node needs to be individually configured for the volume
+- name: create volume
+  docker_volume:
+    name: "{{ volume_name }}"
+    driver: "{{ volume_driver }}"
+    driver_options:
+      type: "{{ volume_driver_option_type }}"
+      o: "{{ volume_driver_option_o }}"
+      device: "{{ volume_driver_option_device }}"
+    state: present
+  become: true
+  loop: "{{ groups['docker_swarm_nodes'] }}"
+  delegate_to: "{{ item }}"

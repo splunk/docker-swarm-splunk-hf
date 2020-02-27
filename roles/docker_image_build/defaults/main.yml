@@ -1,0 +1,39 @@
+# the if logic is in place to grab inventory vars about the host we connect to (docker_build_hosts), vs the host we're operating about (docker_services)
+# by default build in the user's home directory
+docker_build_path: "{{ hostvars[ansible_host]['docker_build_path'] if 'docker_build_path' in hostvars[ansible_host] else '~' }}"
+
+timezone: UTC
+
+common_staging_paths: {}
+host_staging_paths: {}
+
+common_apt_packages: []
+host_apt_packages: []
+
+common_stage_items: []
+host_stage_items: []
+
+common_indexed_fields: {}
+host_indexed_fields: {}
+
+common_run_commands: []
+host_run_commands: []
+
+common_build_variants: []
+host_build_variants: []
+
+# these had to be placed in group_vars/docker_services such that they are also available to docker_service_deploy
+#common_volumes: []
+#host_volumes: []
+
+kvstore_disabled: true
+
+healthcheck_command: "{{ splunk_home }}/bin/splunk cmd python {{ splunk_home }}/metrics_healthcheck.py"
+
+entrypoint: "{{ splunk_home }}/entrypoint.sh"
+# by default run entrypoint as splunk user
+entrypoint_user: "{{ splunk_user_id }}:{{ splunk_group_id }}"
+
+# the provided entrypoint.sh (defined above) runs splunk
+# if install_splunk is set to false entrypoint also needs to be overridden
+install_splunk: true

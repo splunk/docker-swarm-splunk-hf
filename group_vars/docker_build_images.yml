@@ -1,0 +1,17 @@
+role_build_variants:
+  - build_vars:
+      primary_build: true
+      tag: "{{ version }}"
+      push_when: "{{ true }}"
+  - build_vars:
+      primary_build: false
+      tag: "{{ version }}-standalone"
+
+role_volumes:
+    # image_volumes get defined as VOLUMEs in Dockerfile
+    - mount_type: image_volume
+      # paths are created inside Dockerfile prior to the VOLUME definition
+      path: "{{ splunk_home }}/var"
+      # Dockerfile switched USER context based on owner/group defined below before creating the path location
+      owner: "{{ splunk_user_id }}"
+      group: "{{ splunk_group_id }}"

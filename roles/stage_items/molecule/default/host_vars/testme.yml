@@ -1,0 +1,336 @@
+# staging_paths are role/group/host _vars usually
+staging_paths:
+    # where Dockerfile gets built
+    # not copied to the docker image
+    build:
+      is_base_path: true
+    splunk: {}
+    git: {}
+
+# dest points to a temporary path
+# it is passed from the calling role
+dest: /root/staged_items
+
+# use this to test condition functionality
+test_condition_values:
+  - true_condition
+
+stage_items:
+  # template a directory structure with true condition
+  - type: template
+    src: "hosts/{{ inventory_hostname }}/templates/basic_test"
+    # dest points to a staging_path
+    dest: splunk
+    # this should evaluate to true
+    condition: "{{ 'true_condition' in test_condition_value }}"
+
+    # modes are passed to the file and template modules, so multiple formats are valid
+    directory_mode: "0700"
+    mode: "u=rw,g=,o="
+
+    _test_config:
+      paths:
+        # all templated paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/splunk/basic_template
+        - /root/staged_items/splunk/anotherlayer/
+        - /root/staged_items/splunk/anotherlayer/basic_template
+      # for convenience all files are the same template
+      # we effectively test templating once
+      # but also test that the recursion works as expected
+      # NOTE there is a newline in the template file
+      file_contents: "This file was templated for testme.\n"
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0700"
+      mode: "0600"
+
+  # skip templating due to false condition
+  - type: template
+    src: "hosts/{{ inventory_hostname }}/templates/basic_test"
+    dest: splunk
+    dest_sub_path: nothinghere
+    # this should evaluate to false
+    condition: "{{ 'false_condition' in test_condition_values }}"
+
+    _test_config:
+      paths: []
+      absent_paths:
+        - /root/staged_items/splunk/nothinghere
+
+
+  # template a single file
+  - type: template
+    # src *must* be a directory
+    src: "hosts/{{ inventory_hostname }}/templates"
+    # but you can specify patterns if you want specific files
+    pattern:
+      - single_file.txt
+    # dest points to a staging_path
+    # this one points to the build path, which has is_base_path true
+    # so it should be templated directly into /root/staged_items
+    dest: build
+
+    # modes are passed to the file and template modules, so multiple formats are valid
+    directory_mode: "0700"
+    mode: "u=rw,g=,o="
+
+    _test_config:
+      paths:
+        # all templated paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/single_file.txt
+      # NOTE there is a newline in the template file
+      file_contents: "This file was templated for testme.\n"
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0700"
+      mode: "0600"
+
+  # test copying a file
+  - type: copy
+    src: "hosts/{{ inventory_hostname }}/files/copied_file"
+    dest: splunk
+
+    # modes are passed to the file and copy modules, so multiple formats are valid
+    directory_mode: "0700"
+    mode: "u=rw,g=,o="
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/splunk/copied_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was copied.\n"
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0700"
+      mode: "0600"
+
+  # test copying a directory structure
+  - type: copy
+    src: "hosts/{{ inventory_hostname }}/files/test_copy_directory"
+    dest: build
+
+    # modes are passed to the file and copy modules, so multiple formats are valid
+    directory_mode: "0700"
+    mode: "u=rw,g=,o="
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/copied_file
+        - /root/staged_items/anotherlayer/
+        - /root/staged_items/anotherlayer/copied_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was copied.\n"
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0700"
+      mode: "0600"
+
+  # test copying a file by content
+  - type: copy
+    content: "This file was created from content.\n"
+    dest: splunk
+    dest_sub_path: content_file
+
+    # modes are passed to the file and copy modules, so multiple formats are valid
+    mode: "u=rw,g=,o="
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/splunk/content_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was created from content.\n"
+      # mode must be specified as a string representation of an octal integer for testing
+      mode: "0600"
+
+  # test copying a file by (json) content
+  - type: copy
+    content: "{{ {'content_key': 'content_value'} | to_json }}"
+    dest: splunk
+    dest_sub_path: json_content_file
+
+    # modes are passed to the file and copy modules, so multiple formats are valid
+    mode: "u=rw,g=,o="
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/splunk/json_content_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: '{"content_key": "content_value"}'
+      # mode must be specified as a string representation of an octal integer for testing
+      mode: "0600"
+
+  # test staging an archive
+  - type: archive
+    src: "hosts/{{ inventory_hostname }}/files/archive.tgz"
+    dest: splunk
+
+    # this test uses the tarred permissions, but the tarred permissions are shown below
+    #directory_mode: "0700"
+    #mode: "u=rw,g=,o="
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/splunk/unarchived_file
+        - /root/staged_items/splunk/unarchived_directory/
+        - /root/staged_items/splunk/unarchived_directory/unarchived_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was in an archive.\n"
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0700"
+      mode: "0600"
+
+  # test staging an archive and overriding the permissions
+  - type: archive
+    src: "hosts/{{ inventory_hostname }}/files/archive-override-mode.tgz"
+    dest: build
+
+    # this test override the tarred permissions
+    # only mode is allowed to be passed to the unarchive module
+    # this mode will be applied to files *and* directories
+    mode: "u=rwx,g=,o="
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/unarchived_file
+        - /root/staged_items/unarchived_directory/
+        - /root/staged_items/unarchived_directory/unarchived_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was in an archive.\n"
+      # mode must be specified as a string representation of an octal integer for testing
+      # directory_mode isn't a parameter for the play, but is required to be set for testing
+      directory_mode: "0700"
+      mode: "0700"
+
+  # test creating a directory structure
+  - type: directory
+    dest: splunk
+    dest_sub_path: newly/created/directory
+    # stage_directory only takes one mode value
+    mode: "0600"
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # include all created paths to test mode for each
+        - /root/staged_items/splunk/newly/
+        - /root/staged_items/splunk/newly/created/
+        - /root/staged_items/splunk/newly/created/directory/
+      # "directory_mode" is used during the test to check directories, even though this task only accepts "mode"
+      # directory_mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0600"
+
+  # test staging files via git
+  - type: git
+    repo: ssh://remote-git/root/repo.git
+    # add separate_git_dir for idempotence testing needs, since it won't be removed
+    separate_git_dir: /root/.repo_git
+    dest: splunk
+    dest_sub_path: repo
+    version: master
+    key_file: "hosts/{{ inventory_hostname }}/files/id_rsa"
+
+    # the git module doesn't accept the mode parameters
+    #directory_mode:
+    #mode:
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/splunk/repo/
+        - /root/staged_items/splunk/repo/cloned_file
+        - /root/staged_items/splunk/repo/cloned_directory/
+        - /root/staged_items/splunk/repo/cloned_directory/cloned_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was cloned from a git repo's master branch.\n"
+      # define the expected modes, though they aren't controlled by our configuration or playbook
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0755"
+      mode: "0644"
+
+  # test staging files via git
+  # this is identical to the git host, but uses a different version to ensure versioning works
+  - type: git
+    repo: ssh://remote-git/root/repo.git
+    # add separate_git_dir for idempotence testing needs, since it won't be removed
+    separate_git_dir: /root/.repo_specific_branch.git
+    dest: splunk
+    dest_sub_path: repo_specific_branch
+    version: specific_branch
+    key_file: "hosts/{{ inventory_hostname }}/files/id_rsa"
+
+    # the git module doesn't accept the mode parameters
+    #directory_mode:
+    #mode:
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/splunk/repo_specific_branch/
+        - /root/staged_items/splunk/repo_specific_branch/cloned_file
+        - /root/staged_items/splunk/repo_specific_branch/cloned_directory/
+        - /root/staged_items/splunk/repo_specific_branch/cloned_directory/cloned_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was cloned from a git repo's specific_branch branch.\n"
+      # define the expected modes, though they aren't controlled by our configuration or playbook
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0755"
+      mode: "0644"
+
+  # test staging files via git
+  # this is identical to the git host, but doesn't specify dest_sub_path, instead assuming dest is empty
+  - type: git
+    repo: ssh://remote-git/root/repo.git
+    # add separate_git_dir for idempotence testing needs, since it won't be removed
+    #separate_git_dir: /root/.repo_specific_branch.git
+    separate_git_dir: /root/.no_dest_sub_key.git
+    dest: git
+    version: master
+    key_file: "hosts/{{ inventory_hostname }}/files/id_rsa"
+
+    # the git module doesn't accept the mode parameters
+    #directory_mode:
+    #mode:
+
+    # test configuration, not part of ansible role
+    _test_config:
+      paths:
+        # all copie paths, files *and* directories
+        # add trailing slashes to directories for readability
+        - /root/staged_items/git/cloned_file
+        - /root/staged_items/git/cloned_directory/
+        - /root/staged_items/git/cloned_directory/cloned_file
+      # for convenience all files are the same content
+      # NOTE there is a newline in the source file
+      file_contents: "This file was cloned from a git repo's master branch.\n"
+      # define the expected modes, though they aren't controlled by our configuration or playbook
+      # mode must be specified as a string representation of an octal integer for testing
+      directory_mode: "0755"
+      mode: "0644"

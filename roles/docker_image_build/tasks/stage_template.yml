@@ -1,0 +1,8 @@
+- name: "{{ stage_item_config.src }} import new stage_template"
+  include_role:
+    name: stage_item
+  vars:
+    type: template
+    src: "{{ stage_item_config.src }}"
+    patterns: "{{ stage_item_config.patterns | default(omit) }}"
+    dest: "{{ stage_item_dest }}"

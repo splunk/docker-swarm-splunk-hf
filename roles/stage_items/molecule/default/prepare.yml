@@ -1,0 +1,69 @@
+---
+- name: Prepare remote-git
+  hosts: git_servers
+  gather_facts: no
+  tasks:
+    - name: Install sshd
+      package:
+        name: openssh-server
+
+    # starting sshd via systemctl is gross in docker
+    # so we do things the hard way
+    - name: Create /var/run/sshd
+      file:
+        path: /var/run/sshd
+        state: directory
+    - name: Create ssh keys
+      command: "ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''"
+    - name: Start sshd
+      command: /usr/sbin/sshd
+
+    - name: create .ssh
+      file:
+        path: /root/.ssh
+        state: directory
+        mode: u=rwx,g=,o=
+        owner: root
+        group: root
+
+    - name: copy authorized_keys
+      copy:
+        src: "hosts/{{ inventory_hostname }}/files/authorized_keys"
+        dest: /root/.ssh
+        mode: u=rw,g=,o=
+        owner: root
+        group: root
+
+    - name: install remote-git-files.tgz
+      unarchive:
+        src: "hosts/{{ inventory_hostname }}/files/remote-git-files.tgz"
+        dest: /root
+
+- name: Install git
+  hosts: git_servers,git_clients
+  gather_facts: no
+  tasks:
+    - name: Install git
+      package:
+        name: git
+
+- name: configure git_clients
+  hosts: git_clients
+  gather_facts: no
+  tasks:
+    # add remote-git to known_hosts
+    - name: Create /root/.ssh
+      file:
+        path: /root/.ssh
+        state: directory
+        mode: u=rwx,g=,o=
+    - name: ssh-keyscan remote-git
+      shell: ssh-keyscan remote-git > /root/.ssh/known_hosts
+
+    # this step is required to be done before this role is called
+    # it is the responsibility of the calling playbook/role to pass a dest that exists
+    # but for testing we'll just create it here
+    - name: Create dest
+      file:
+        path: "{{ dest }}"
+        state: directory

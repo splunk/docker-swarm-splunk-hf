@@ -1,0 +1,59 @@
+# ansible <2.8 docker_swarm_service can't accept driver_config, so for now we explicitly create the volumes first
+- name: create volumes
+  include_tasks: create_volume.yml
+  vars:
+    volume_path: "{{ volume_item.path }}"
+    volume_name: "{{ volume_item.name }}"
+    volume_type: "{{ volume_item.volume_type }}"
+    volume_owner: "{{ volume_item.owner | default(omit) }}"
+    volume_group: "{{ volume_item.group | default(omit) }}"
+  when: "(volume_item.mount_type == 'service_volume') and (state|default('present') == 'present') and (volume_item is default_or_present)"
+  loop: "{{ volumes }}"
+  # the _volume.yml tasks also use loop, so here we use a different loop_var
+  loop_control:
+    loop_var: volume_item
+
+- name: handle config changes
+  block:
+    # docker configs can't be changed while associated with a running service
+    # thus, if this task fails we need to perform the process defined in rescue
+    - name: create final configs
+      include_tasks: create_configs.yml
+
+    - name: create service with final configs
+      include_tasks: create_service.yml
+
+  rescue:
+    - name:  create temporary configs
+      include_tasks: create_configs.yml
+      vars:
+        intermediate_configs: true
+
+    - name: create or update service with temporary configs
+      include_tasks: create_service.yml
+      vars:
+        intermediate_configs: true
+
+    - name:  update final configs
+      include_tasks: create_configs.yml
+
+    - name: update service with final configs
+      include_tasks: create_service.yml
+
+    - name: remove temporary configs
+      include_tasks: remove_configs.yml
+      vars:
+        intermediate_configs: true
+
+- name: remove volumes
+  include_tasks: remove_volume.yml
+  vars:
+    volume_name: "{{ volume_item.name }}"
+  when: "(volume_item.mount_type == 'service_volume') and ((state|default('present') == 'absent') or (volume_item is defined_absent))"
+  loop: "{{ volumes }}"
+  # the _volume.yml tasks also use loop, so here we use a different loop_var
+  loop_control:
+    loop_var: volume_item
+
+- name: remove stale docker configs
+  include_tasks: remove_configs.yml

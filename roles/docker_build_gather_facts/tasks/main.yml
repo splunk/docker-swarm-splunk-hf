@@ -1,0 +1,6 @@
+# gather facts via setup in the role, which is after delegation
+# we want to enable inventory configurations to make use of collected facts (like ansible_date_time)
+# because this is set to run once, it only makes sense to call this role with delegation
+- name: run setup to gather facts
+  setup:
+  run_once: true

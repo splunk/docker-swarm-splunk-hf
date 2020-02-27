@@ -1,0 +1,7 @@
+- name: "remove {% if intermediate_configs is defined and intermediate_configs %}intermediate {% endif %}docker configs"
+  docker_config:
+    name: "{% if intermediate_configs is defined and intermediate_configs %}{{ item.content | to_uuid }}{% else %}{{ item.name }}{% endif %}"
+    state: absent
+  loop: "{{ docker_configs }}"
+  when: "(state is defined and state=='absent') or (item is defined_absent) or (intermediate_configs is defined and intermediate_configs)"
+  become: true

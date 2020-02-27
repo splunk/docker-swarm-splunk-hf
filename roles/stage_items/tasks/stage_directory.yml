@@ -1,0 +1,5 @@
+- name: "{{ stage_dest }} create directory"
+  file:
+    path: "{{ stage_dest }}"
+    state: directory
+    mode: "{{ stage_item.mode | default(omit) }}"

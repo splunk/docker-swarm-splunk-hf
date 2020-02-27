@@ -1,0 +1,79 @@
+docker_build_directory_prefix: docker_build_
+docker_build_directory_prefix_git: docker_build_git_
+indexed_field_stanza_prefix: docker_build_
+indexed_field_class_name: docker_build
+
+staging_paths: "{{ role_staging_paths | combine(common_staging_paths) | combine(host_staging_paths) }}"
+
+apt_packages: "{{ role_apt_packages + common_apt_packages + host_apt_packages }}"
+
+stage_items: "{{ role_stage_items + common_stage_items + host_stage_items }}"
+
+indexed_fields: "{{ common_indexed_fields | combine(host_indexed_fields) }}"
+
+run_commands: "{{ common_run_commands + host_run_commands }}"
+
+build_variants: "{{ role_build_variants + common_build_variants + host_build_variants }}"
+
+role_apt_packages:
+  # Dockerfile uses curl, so it must be installed
+  - curl
+
+
+# locations that can be copied/templated to, and will be copied to the docker image one at a time
+# this allows a fewer number of COPY operations, as one copy path can contain multiple copy/template sets
+# a new copy path should be considered when there is not one that meets the dest/owner configuration you require
+# the assumption is that most use cases can be fully handled by these three defaults
+role_staging_paths:
+    # where Dockerfile gets built
+    # not copied to the docker image
+    build:
+      is_base_path: true
+    # dest is undefined, since build doesn't get copied to the docker image
+    # no ownerwhip specified
+    #owner:
+    #group:
+
+    # splunk_home
+    # splunk owner/group
+    splunk:
+      # dest is within the container
+      dest: "{{ splunk_home }}"
+      owner: "{{ splunk_user_id }}"
+      group: "{{ splunk_group_id }}"
+
+# our role path needs to be determinable even from other roles which this role included
+# going up a directory and into this role from there ensures we can always get where we need to go
+docker_image_build_role_path: "{{ role_path }}/../docker_image_build"
+
+role_stage_items:
+      # build is the top level, which contains Dockerfile and all items Dockerfile refers to
+    - src: "{{ docker_image_build_role_path }}/templates/build"
+      dest: build
+      type: template
+
+      # base is things that go into every splunk install
+    - src: "{{ docker_image_build_role_path }}/templates/base"
+      dest: splunk
+      type: template
+      condition: "{{ install_splunk }}"
+      # this includes entrypoint.sh, which needs to be +x, and is so in git
+      mode: preserve
+
+    - src: "{{ docker_image_build_role_path }}/templates/primary_build"
+      dest: splunk
+      condition: "{{ install_splunk and build_vars.primary_build }}"
+      type: template
+
+    - src: "{{ docker_image_build_role_path }}/templates/kvstore_disable"
+      dest: splunk
+      # leave kvstore enabled for non-primary images, since they are often used as all-in-one instances.
+      condition: "{{ install_splunk and kvstore_disabled and build_vars.primary_build }}"
+      type: template
+
+    - src: "{{ docker_image_build_role_path }}/templates/metrics_healthcheck"
+      dest: splunk
+      condition: "{{ install_splunk and healthcheck_metrics_series is defined }}"
+      type: template
+
+# role_volumes is defined in group_vars/docker_services, since docker_service_deploy also needs it
