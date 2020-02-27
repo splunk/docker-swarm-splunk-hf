@@ -2,7 +2,15 @@
 # by default build in the user's home directory
 docker_build_path: "{{ hostvars[ansible_host]['docker_build_path'] if 'docker_build_path' in hostvars[ansible_host] else '~' }}"
 
+ubuntu_tag: latest
+
 timezone: UTC
+
+splunk_home: /opt/splunk
+splunk_user: splunk
+splunk_user_id: 8089
+splunk_group: splunk
+splunk_group_id: 8089
 
 common_staging_paths: {}
 host_staging_paths: {}
@@ -28,7 +36,10 @@ host_build_variants: []
 
 kvstore_disabled: true
 
-healthcheck_command: "{{ splunk_home }}/bin/splunk cmd python {{ splunk_home }}/metrics_healthcheck.py"
+healthcheck_command: |-
+  {% if healthcheck_interval_seconds is defined %}
+  {{ splunk_home }}/bin/splunk cmd python {{ splunk_home }}/metrics_healthcheck.py
+  {% endif %}
 
 entrypoint: "{{ splunk_home }}/entrypoint.sh"
 # by default run entrypoint as splunk user
