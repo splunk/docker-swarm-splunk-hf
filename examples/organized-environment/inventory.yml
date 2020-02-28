@@ -20,12 +20,16 @@ all:
 
         # enable healthcheck for the _internal index
         internal_healthcheck_forwarder:
+          # remember every image must have a version number
           version: 1.0.0
+
           # perform the check every 30 seconds
           healthcheck_interval_seconds: 30
 
-          # expect to see non-zero thruput for the _internal index no older than 60 seconds
-          # the metrics healthcheck lets you pick the group and series to monitor in metrics.log
+          # in splunk's metrics.log
+          # for the per_index_thruput group
           healthcheck_metrics_group: per_index_thruput
+          # for the _internal series
           healthcheck_metrics_series: _internal
-          healthcheck_allowed_age_seconds: 60
+          # expect to see non-zero thruput no older than 60 seconds
+          healthcheck_allowed_age_seconds: 6
