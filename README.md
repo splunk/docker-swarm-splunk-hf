@@ -22,6 +22,8 @@
  
  These playbooks provide you with this path:
  
+ * Deploy Docker Swarm for your environment
+
  * Define your heavy forwarder image
    * Operating System
    * Splunk Version
@@ -44,6 +46,34 @@
 * Push your image to a registry
 
 * Deploy a service using your image
+
+## Deploy Docker Swarm
+
+NOTE: This playbook and associated roles are a starting point, and assume your docker nodes are all running RHEL/CentOS.
+
+### Define your nodes
+
+In your inventory, you should specify groups in this manner:
+
+    docker_nodes:
+      children:
+        # defines which host will perform the build
+        # only the first host in this group will ever be used
+        docker_build_hosts:
+          hosts:
+            docker-build-hostname:
+        # nodes that are actually part of the swarm
+        docker_swarm_nodes:
+          children:
+            # swarm managers are a subset of swarm nodes that are defined as managers of the node
+            # however it is valid, and potentially preferred, for all swarm nodes to be managers
+            docker_swarm_managers:
+              hosts:
+                docker-swarm-hostname01:
+
+Once your inventory has been defined, you can provision your docker nodes by running:
+
+`ansible-playbook -i <path-to-inventory-file> docker_nodes_provision.yml`
 
 ## Examples
 
