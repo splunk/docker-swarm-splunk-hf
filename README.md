@@ -41,7 +41,6 @@
    * Standalone image
       * Eases development efforts prior to deploying to swarm
       * Leaves splunkweb enabled
-      * Allows simple index creation
    
 * Push your image to a registry
 
