@@ -1,0 +1,5 @@
+- name: install docker python library
+  pip:
+    name: docker
+    state: present
+  become: true

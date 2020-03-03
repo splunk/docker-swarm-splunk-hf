@@ -1,0 +1,21 @@
+- name: fetch swarm status of all nodes
+  docker_swarm:
+    state: inspect
+  register: swarm_info
+  become: true
+
+- name: grab first join token and manager to join
+  set_fact:
+    manager_join_token: "{{ hostvars[item]['swarm_info']['swarm_facts']['JoinTokens']['Manager'] }}"
+    worker_join_token: "{{ hostvars[item]['swarm_info']['swarm_facts']['JoinTokens']['Worker'] }}"
+    swarm_join_member: "{{ item }}"
+  loop: "{{ groups['docker_swarm_managers'] }}"
+  run_once: true
+  when: "('swarm_facts' in hostvars[item]['swarm_info']) and (manager_join_token is not defined)"
+
+- name: check for conflicting join tokens
+  fail:
+    msg: conflicting join tokens found!
+  loop: "{{ groups['docker_swarm_managers'] }}"
+  run_once: true
+  when: "('swarm_facts' in hostvars[item]['swarm_info']) and (manager_join_token is defined) and (manager_join_token!=hostvars[item]['swarm_info']['swarm_facts']['JoinTokens']['Manager'])"

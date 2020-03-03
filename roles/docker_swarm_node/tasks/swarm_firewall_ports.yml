@@ -1,0 +1,13 @@
+- name: allow docker swarm ports between docker nodes
+  firewalld:
+    port: "{{ item.port }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop:
+    - port: 2376/tcp
+    - port: 2377/tcp
+    - port: 7946/tcp
+    - port: 7946/udp
+    - port: 4789/udp
+  become: yes

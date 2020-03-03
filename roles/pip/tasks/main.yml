@@ -1,0 +1,4 @@
+- name: install pip
+  package:
+    name: python2-pip
+  become: true

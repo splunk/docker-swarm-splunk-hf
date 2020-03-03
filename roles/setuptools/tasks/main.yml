@@ -1,0 +1,5 @@
+- name: install setuptools
+  package:
+    name: python-setuptools
+    state: present
+  become: true
