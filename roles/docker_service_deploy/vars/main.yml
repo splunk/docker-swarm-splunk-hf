@@ -1,3 +1,9 @@
+# the "normal" volumes don't need these options
+vanilla_volume_driver: "{{ omit }}"
+vanilla_volume_driver_option_type: "{{ omit }}"
+vanilla_volume_driver_option_o: "{{ omit }}"
+vanilla_volume_driver_option_device: "{{ omit }}"
+
 # these vars are used to aid dynamic variable names
 
 # template volume driver var *names* (not values)

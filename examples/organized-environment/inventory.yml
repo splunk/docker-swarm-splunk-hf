@@ -1,35 +1,73 @@
 all:
   children:
-    # defines which host will perform the build
-    # only the first host in this group will ever be used
-    docker_build_hosts:
-      hosts:
-        # for these examples we'll build images on the same host ansible is running on
-        localhost:
-          connection: local
+    # docker_nodes is the parent group for docker_build_hosts and docker_swarm_nodes
+    docker_nodes:
+      children:
+        # defines which host will perform the build
+        # only the first host in this group will ever be used
+        docker_build_hosts:
+          hosts:
+            # for these examples we'll build images on the same host ansible is running on
+            # but we give it a made up name, which doesn't matter as we override connection
+            docker-build:
+              ansible_host: localhost
+              ansible_connection: local
+        docker_swarm_nodes:
+          children:
+            # swarm managers are a subset of swarm nodes that are defined as managers of the node
+            # however it is valid, and potentially preferred, for all swarm nodes to be managers
+            docker_swarm_managers:
+              hosts:
+                # for these examples we'll deploy images on the same host ansible is running on
+                # but we give it a made up name, which doesn't matter as we override connection
+                docker-swarm01:
+                  ansible_hostname: localhost
+                  ansible_connection: local
 
-    docker_build_images:
 
-      # each image we want to build is defined as a host, and thus can make use of ansible's variable precedence
-      hosts:
+    # because we plan on deploying all of our images that we've built, docker_services is a group that contains
+    # docker_build_images
+    docker_services:
+      children:
+        docker_build_images:
 
-        # don't do much other than run splunk
-        hello_swarm_forwarder:
-          # every image definition must have a version
-          version: 1.0.0
+          # each image we want to build is defined as a host, and thus can make use of ansible's variable precedence
+          hosts:
 
-        # enable healthcheck for the _internal index
-        internal_healthcheck_forwarder:
-          # remember every image must have a version number
-          version: 1.0.0
+            # don't do much other than run splunk
+            hello_swarm_forwarder:
+              # every image definition must have a version
+              version: 1.0.0
 
-          # perform the check every 30 seconds
-          healthcheck_interval_seconds: 30
+            # enable healthcheck for the _internal index
+            internal_healthcheck_forwarder:
+              # remember every image must have a version number
+              version: 1.0.0
 
-          # in splunk's metrics.log
-          # for the per_index_thruput group
-          healthcheck_metrics_group: per_index_thruput
-          # for the _internal series
-          healthcheck_metrics_series: _internal
-          # expect to see non-zero thruput no older than 60 seconds
-          healthcheck_allowed_age_seconds: 6
+              # perform the check every 30 seconds
+              healthcheck_interval_seconds: 30
+
+              # in splunk's metrics.log
+              # for the per_index_thruput group
+              healthcheck_metrics_group: per_index_thruput
+              # for the _internal series
+              healthcheck_metrics_series: _internal
+              # expect to see non-zero thruput no older than 60 seconds
+              healthcheck_allowed_age_seconds: 6
+
+            # bind mount
+            volumes_mounted_forwarder:
+              version: 1.0.0
+
+              host_volumes:
+                # create a bind mount to see how the container can be made aware of specific host data
+                - mount_type: service_bind
+                  source: /etc/hosts
+                  target: "{{ splunk_home }}/host_etc_hosts"
+
+                # create a persistent volume for $SPLUNK_HOME/var
+                # note that if your swarm nodes don't have a common storage path, this likely needs to be NFS
+                # or it's only persistent per node, and not across all nodes
+                - mount_type: service_volume
+                  name: volumes_mounted_forwarder_service_volume
+                  path: "{{ splunk_home }}/var"

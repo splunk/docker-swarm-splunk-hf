@@ -4,7 +4,7 @@
   vars:
     volume_path: "{{ volume_item.path }}"
     volume_name: "{{ volume_item.name }}"
-    volume_type: "{{ volume_item.volume_type }}"
+    volume_type: "{{ volume_item.volume_type | default('vanilla') }}"
     volume_owner: "{{ volume_item.owner | default(omit) }}"
     volume_group: "{{ volume_item.group | default(omit) }}"
   when: "(volume_item.mount_type == 'service_volume') and (state|default('present') == 'present') and (volume_item is default_or_present)"

@@ -1,4 +1,4 @@
-{% if volumes %}
+{% if volumes | selectattr('mount_type', 'in', ['service_volume', 'service_bind']) | list %}
 volumes:
 {% for volume in volumes %}
 {% if volume.mount_type == 'service_volume' %}
@@ -15,7 +15,7 @@ volumes:
 {% endif %}
 {% endfor %}
 {% else %}
-volume_configs: {{ omit }}
+volumes: {{ omit }}
 {% endif %}
 
 # this is the final set of configs, with the predictable and defined names

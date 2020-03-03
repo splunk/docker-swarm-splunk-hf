@@ -238,4 +238,39 @@ If all goes well, you should have four new docker images:
 
 ### Time to push!
 
+#### Prerequisites
+
+* Docker registry to you have permissions to push to
+* Changes made to the [inventory variables](examples/organized-environment/group_vars/all.yml) for:
+  * registry
+  * registry_username
+  * registry_password
+  * repository_path (optional)
+* Changes made to the [inventory hosts](examples/organized-environment/inventory.yml) list for:
+  * docker_nodes
+
+#### The push playbook
+
+From the directory containing this set of playbooks, run:
+
+`ansible-playbook -i examples/organized-environment/inventory.yml push.yml`
+
+This will log in to the repository and perform the necessary tasks to have your newly built images pushed to your Docker
+registry.
+
+That's it! There's very little to this step, but it is separated out to prevent unintentional pushing of an image prior
+to validation that it is correct.
+
 ### Time to deploy!
+
+#### Prerequisites
+
+* Operational Docker Swarm environment.
+
+TODO - Add Swarm bringup playbooks and documentation.
+
+#### The deploy playbook
+
+From the directory containing this set of playbooks, run:
+
+`ansible-playbook -i examples/organized-environment/inventory.yml deploy.yml`

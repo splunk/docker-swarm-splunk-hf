@@ -3,6 +3,7 @@
   docker_volume:
     name: "{{ volume_name }}"
     state: absent
-  become: true
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"
   loop: "{{ groups['docker_swarm_nodes'] }}"
   delegate_to: "{{ item }}"

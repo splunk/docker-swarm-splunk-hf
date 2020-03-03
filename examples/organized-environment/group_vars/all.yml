@@ -27,3 +27,17 @@ common_stage_items:
     dest_sub_path: etc/apps/docker_forwarder_outputs
     # but only when building the primary (not standalone) build
     condition: "{{ build_vars.primary_build }}"
+
+# common swarm service limits
+limit_cpu: 1
+limit_memory: 2G
+restart_policy: any
+
+# hostname and path to the registry.  this should include only any path components that are general to the registry,
+# and not any that are specific to where your image will be stored on that registry
+#registry:
+# log in to the registry with these credentials
+#registry_username:
+#registry_password:
+# path on the registry to our repository (optional)
+#repository_path:
