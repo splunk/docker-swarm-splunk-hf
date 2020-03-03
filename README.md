@@ -48,7 +48,8 @@
 
 ## Deploy Docker Swarm
 
-NOTE: This playbook and associated roles are a starting point, and assume your docker nodes are all running RHEL/CentOS.
+NOTE: This playbook and associated roles are a starting point, and assume your docker nodes are all running
+RHEL/CentOS 7.
 
 ### Define your nodes
 
@@ -69,6 +70,8 @@ In your inventory, you should specify groups in this manner:
             docker_swarm_managers:
               hosts:
                 docker-swarm-hostname01:
+                ...
+                docker-swarm-hostname0N:
 
 Once your inventory has been defined, you can provision your docker nodes by running:
 
