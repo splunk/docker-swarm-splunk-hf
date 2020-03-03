@@ -1,0 +1,12 @@
+- hosts: docker_nodes
+  roles:
+    - role: docker_node
+
+- hosts: docker_swarm_nodes
+  roles:
+    - role: docker_swarm_node
+
+# the build node needs git installed for the build process to be able to fetch git repositories
+- hosts: docker_build_hosts
+  roles:
+    - role: git

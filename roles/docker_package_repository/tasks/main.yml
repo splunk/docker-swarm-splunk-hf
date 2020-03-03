@@ -1,0 +1,9 @@
+- name: add docker repository for RedHat
+  yum_repository:
+    name: docker
+    state: present
+    baseurl: "{{ redhat.baseurl }}"
+    description: Docker Repository
+    gpgkey: "{{ redhat.gpgkey }}"
+  become: true
+  when: ansible_os_family == 'RedHat'

@@ -1,0 +1,3 @@
+dependencies:
+  - role: docker_package_repository
+  - role: docker_python

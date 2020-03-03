@@ -1,0 +1,14 @@
+- name: install docker
+  package:
+    name: docker-ce
+    state: present
+  become: true
+    - Enable and start or restart docker
+
+- name: install /etc/docker/daemon.json
+  template:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+  become: true
+  notify:
+    - Enable and start or restart docker

@@ -1,0 +1,20 @@
+- name: bring up managers not currently in the swarm
+  docker_swarm:
+    state: join
+    advertise_addr: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    remote_addrs:
+      - "{{ hostvars[swarm_join_member]['ansible_default_ipv4']['address'] }}"
+    join_token: "{{ manager_join_token }}"
+  when: "('docker_swarm_managers' in group_names) and ('swarm_facts' not in swarm_info)"
+  become: true
+
+# workers don't return swarm_facts, so this runs even for workers already in the swarm
+- name: bring up workers
+  docker_swarm:
+    state: join
+    advertise_addr: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    remote_addrs:
+      - "{{ hostvars[swarm_join_member]['ansible_default_ipv4']['address'] }}"
+    join_token: "{{ worker_join_token }}"
+  when: "'docker_swarm_workers' in group_names"
+  become: true

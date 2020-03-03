@@ -1,0 +1,32 @@
+    all:
+      children:
+        # docker_build_hosts lists the machines that will actually perform the docker build and docker push
+        # this can point to the same instance ansible is running on, but you may prefer a dedicated built host
+        docker_build_hosts:
+          hosts:
+            # for these examples we'll build images on the same host ansible is running on
+            localhost:
+              connection: local
+
+        docker_build_images:
+          hosts:
+            hello_swarm_forwarder:
+              # every image must have a version
+              version: 1.0.0
+
+              # define where to get the splunk tarball
+              # this can be http://, ftp://, file://, etc.
+              # or more specifically, any URL wget will handle
+              splunk_tgz_url: <url to splunk tarball>
+
+              # set the splunk admin user/password for user-seed.conf
+              splunk_admin_user: admin
+              splunk_admin_password: pleasechangeme
+              # you could use splunk_admin_password_hash for a pre-hashed password
+              # splunk_admin_password_hash = <your password hash>
+
+              # a license master uri is required
+              # though forwarders don't index, and therefore don't consume license, they sometimes need to run searches
+              # against populated lookups to forward results to the indexing tier.  the forwarder license doesn't enable
+              # this type of usage.
+              license_master_uri: https://lm.example.org:8089

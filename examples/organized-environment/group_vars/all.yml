@@ -1,0 +1,43 @@
+# get this URL from the download page's "Got wget?" command
+# or any accessible location that hosts the splunk .tgz
+# including file:// locations
+# 7.3.4 included here as an example
+splunk_tgz_url: |-
+  https://www.splunk.com/page/download_track?file=7.3.4/linux/splunk-7.3.4-13e97039fb65-Linux-x86_64.tgz&ac=&wget=true&name=wget&platform=Linux&architecture=x86_64&version=7.3.4&product=splunk&typed=release
+
+# set the splunk admin user/password for user-seed.conf
+splunk_admin_user: admin
+splunk_admin_password: pleasechangeme
+# you could use splunk_admin_password_hash for a pre-hashed password
+# splunk_admin_password_hash = <your password hash>
+
+# specify a license master, but just a dummy here
+license_master_uri: https://lm.example.org:8089
+
+# if you need to escalate privilege to a different user to perform docker operations, specify it here
+# docker_become_user:
+
+# in our pretend environment, these items are common
+common_stage_items:
+  - type: copy
+    src: "{{ inventory_dir }}/files/docker_forwarder_outputs"
+    # stage_items dest points to a staging_path
+    dest: splunk
+    # because dest is, effectively, /opt/splunk, have this directory copied to a subdirectory
+    dest_sub_path: etc/apps/docker_forwarder_outputs
+    # but only when building the primary (not standalone) build
+    condition: "{{ build_vars.primary_build }}"
+
+# common swarm service limits
+limit_cpu: 1
+limit_memory: 2G
+restart_policy: any
+
+# hostname and path to the registry.  this should include only any path components that are general to the registry,
+# and not any that are specific to where your image will be stored on that registry
+#registry:
+# log in to the registry with these credentials
+#registry_username:
+#registry_password:
+# path on the registry to our repository (optional)
+#repository_path:

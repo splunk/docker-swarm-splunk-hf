@@ -1,0 +1,6 @@
+- name: bring up first swarm member
+  docker_swarm:
+    state: present
+  become: true
+  run_once: true
+  register: new_swarm_info

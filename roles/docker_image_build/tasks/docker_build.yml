@@ -3,7 +3,8 @@
     name: "{{ inventory_hostname }}"
     tag: "{{ build_vars.tag }}"
     state: absent
-  become: yes
+  become_user: "{{ docker_become_user|default(omit) }}"
+  register: docker_build_result
   tags: [ never, rebuild ]
 
 - name: perform docker build
@@ -16,7 +17,10 @@
     push: no
     build:
       path: "{{ docker_build_directory.path }}"
-  become: yes
+      # explicitly fetch updates to the FROM image, so things like "latest" continue to be up to date
+      pull: yes
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"
   register: docker_build_result
 
 - name: check docker build created new image

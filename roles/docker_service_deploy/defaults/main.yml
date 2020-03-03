@@ -5,3 +5,9 @@ host_publish: []
 
 common_docker_configs: []
 host_docker_configs: []
+
+splunk_home: /opt/splunk
+splunk_user: splunk
+splunk_user_id: 8089
+splunk_group: splunk
+splunk_group_id: 8089

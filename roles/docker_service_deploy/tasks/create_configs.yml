@@ -6,4 +6,5 @@
     name: "{% if intermediate_configs is defined and intermediate_configs %}{{ item.content | to_uuid }}{% else %}{{ item.name }}{% endif %}"
   loop: "{{ docker_configs }}"
   when: item is default_or_present
-  become: true
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"

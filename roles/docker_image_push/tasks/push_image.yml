@@ -2,7 +2,8 @@
   docker_image:
     name: "{{ repository_push_image }}"
     state: absent
-  become: yes
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"
   when: build_vars.push_when | default(false)
 
 - name: "{{ build_vars.tag }} perform docker push"
@@ -14,5 +15,6 @@
     # to trigger a push of an existing image/tag, the key seems to be for repository to be set to <registry>/<image>
     repository: "{{ repository }}/{{ docker_image_name }}"
     push: yes
-  become: yes
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"
   when: build_vars.push_when | default(false)
