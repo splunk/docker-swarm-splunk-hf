@@ -213,6 +213,46 @@ a value of `True` when the non-standalone image is built.  Thus we have these im
 The set of included stage items attempts to get you on your feet with this process as soon as possible.  These are
 configurations we consider standard and reasonable for almost all instances.
 
+### Mounts and volumes
+
+Many use cases of heavy forwarders require some form of persistent storage for checkpoints.  You get full control of
+mounts defined for your built image and deployed service.
+
+Similar to "stage items", you are given two standard variables to use: `common_volumes` (intended for `group_vars`) and
+`host_volumes` (intended for `host_vars`).
+
+Each item in the `_volumes` list is a dictionary, with this set of keys:
+
+    host_volumes:
+      - name: <name of volume>
+        path: <path to be mounted on the container>
+        mount_type: image_volume|service_volume|service_bind
+        # optional volume_type.  leave unset for "normal" docker volumes.
+        # requires additional configuration for nfs or other drivers.
+        #volume_type:
+        owner: <owner of the mounted location>
+        group: <group of the mounted location>
+
+#### volumes_mounted_forwarder
+
+The `volumes_mounted_forwarder` image definition has this volume definition:
+
+    host_volumes:
+      # create a bind mount to see how the container can be made aware of specific host data
+      - mount_type: service_bind
+        source: /etc/hosts
+        target: "{{ splunk_home }}/host_etc_hosts"
+
+      # create a persistent volume for $SPLUNK_HOME/var
+      # note that if your swarm nodes don't have a common storage path, this likely needs to be NFS
+      # or it's only persistent per node, and not across all nodes
+      - mount_type: service_volume
+        name: volumes_mounted_forwarder_service_volume
+        path: "{{ splunk_home }}/var"
+
+The second volume enables persistent storage for $SPLUNK_HOME/var.  This allows logging and checkpointing to survive
+between runs of the container.
+
 ### Time to build!
 
 Now that we've discussed the components of the image definition, let's actually build the sample inventory.
@@ -227,14 +267,16 @@ From the directory containing this set of playbooks, run:
 
 `ansible-playbook -i examples/organized-environment/inventory.yml build.yml`
 
-If all goes well, you should have four new docker images:
+If all goes well, you should have six new docker images:
 
     % docker image ls
-    REPOSITORY                                                TAG                 IMAGE ID            CREATED             SIZE
-    hello_swarm_forwarder                                     1.0.0               71900b65657b        40 seconds ago      1.16GB
-    hello_swarm_forwarder                                     1.0.0-standalone    f4b506189917        25 seconds ago      1.16GB
-    internal_healthcheck_forwarder                            1.0.0               4092a1157016        53 seconds ago      1.16GB
-    internal_healthcheck_forwarder                            1.0.0-standalone    b556f86c181d        25 seconds ago      1.16GB
+    REPOSITORY                       TAG                 IMAGE ID            CREATED             SIZE
+    hello_swarm_forwarder            1.0.0               1cc85627b805        4 minutes ago       1.16GB
+    hello_swarm_forwarder            1.0.0-standalone    c57563200b60        4 minutes ago       1.16GB
+    internal_healthcheck_forwarder   1.0.0               c1aced0b9f2e        4 minutes ago       1.16GB
+    internal_healthcheck_forwarder   1.0.0-standalone    87341b058f36        4 minutes ago       1.16GB
+    volumes_mounted_forwarder        1.0.0               d7ad71c2bad9        5 minutes ago       1.16GB
+    volumes_mounted_forwarder        1.0.0-standalone    11d48a8886bd        4 minutes ago       1.16GB
 
 ### Time to push!
 
