@@ -3,6 +3,7 @@
     name: "{{ inventory_hostname }}"
     tag: "{{ build_vars.tag }}"
     state: absent
+  become: "{{ docker_become_user is defined }}"
   become_user: "{{ docker_become_user|default(omit) }}"
   register: docker_build_result
   tags: [ never, rebuild ]
