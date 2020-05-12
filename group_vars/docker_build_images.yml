@@ -1,12 +1,3 @@
-role_build_variants:
-  - build_vars:
-      primary_build: true
-      tag: "{{ version }}"
-      push_when: "{{ true }}"
-  - build_vars:
-      primary_build: false
-      tag: "{{ version }}-standalone"
-
 role_volumes:
     # image_volumes get defined as VOLUMEs in Dockerfile
     - mount_type: image_volume
