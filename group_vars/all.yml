@@ -39,3 +39,12 @@ role_docker_configs:
 
 # combine role, common, and host docker configs
 docker_configs: "{{ role_docker_configs + common_docker_configs + host_docker_configs }}"
+
+role_build_variants:
+  - build_vars:
+      primary_build: true
+      tag: "{{ version }}"
+      push_when: "{{ true }}"
+  - build_vars:
+      primary_build: false
+      tag: "{{ version }}-standalone"
