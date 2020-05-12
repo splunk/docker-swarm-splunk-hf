@@ -1,0 +1,15 @@
+- block:
+    - name: "check if {{ repository_push_image }} is missing from the registry"
+      command: "docker manifest inspect {{ repository_push_image }}"
+      become: "{{ docker_become_user is defined }}"
+      become_user: "{{ docker_become_user|default(omit) }}"
+      environment:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+      # we don't need to keep checking after clearing skip_build_and_push
+      when: skip_build_and_push
+
+  # when the image doesn't exist in the registry the above returns a non-zero, causing an exception
+  rescue:
+    - name: image is missing, clear skip_build_and_push
+      set_fact:
+        skip_build_and_push: false
