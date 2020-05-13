@@ -6,7 +6,8 @@
       environment:
         DOCKER_CLI_EXPERIMENTAL: enabled
       # we don't need to keep checking after clearing skip_build_and_push
-      when: skip_build_and_push
+      # only build variants that are configured to push with this configuration should be checked
+      when: (build_vars.push_when | default(false)) and skip_build_and_push
 
   # when the image doesn't exist in the registry the above returns a non-zero, causing an exception
   rescue:
