@@ -1,0 +1,11 @@
+- name: set default to skip build and push
+  set_fact:
+    skip_build_and_push: true
+
+- name: run clear_skip_if_missing for each variant
+  include_tasks: clear_skip_if_missing.yml
+  vars:
+    build_vars: "{{ build_variant.build_vars }}"
+  loop: "{{ build_variants }}"
+  loop_control:
+    loop_var: build_variant

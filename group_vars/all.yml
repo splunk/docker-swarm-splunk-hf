@@ -48,3 +48,6 @@ role_build_variants:
   - build_vars:
       primary_build: false
       tag: "{{ version }}-standalone"
+
+# skip_build_and_push is overrideable by using the skip-if-in-registry tag, but defaults to false to always perform the build
+skip_build_and_push: false
