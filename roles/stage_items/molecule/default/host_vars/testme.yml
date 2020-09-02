@@ -22,7 +22,7 @@ stage_items:
     # dest points to a staging_path
     dest: splunk
     # this should evaluate to true
-    condition: "{{ 'true_condition' in test_condition_value }}"
+    condition: "{{ 'true_condition' in test_condition_values }}"
 
     # modes are passed to the file and template modules, so multiple formats are valid
     directory_mode: "0700"

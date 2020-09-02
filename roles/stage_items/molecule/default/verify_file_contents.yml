@@ -1,0 +1,9 @@
+- name: "Read {{ file_path }} contents"
+  slurp:
+    src: "{{ file_path }}"
+  register: file_contents
+
+- name: "Verify {{ file_path }} contents"
+  assert:
+    that:
+      - file_contents == contents

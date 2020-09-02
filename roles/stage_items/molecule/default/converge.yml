@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: test_hosts
+  tasks:
+    - name: "Include stage_items"
+      include_role:
+        name: "stage_items"

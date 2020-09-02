@@ -1,0 +1,8 @@
+---
+- hosts: test_hosts
+  tasks:
+    - name: Verify stage_item
+      include_tasks: verify_stage_item.yml
+      loop: "{{ stage_items }}"
+      loop_control:
+        loop_var: stage_item

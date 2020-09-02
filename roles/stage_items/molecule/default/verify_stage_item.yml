@@ -1,0 +1,18 @@
+---
+- name: Verify paths
+  include_tasks: verify_path.yml
+  loop: "{{ stage_item._test_config.paths }}"
+  loop_control:
+    loop_var: path
+  vars:
+    directory_mode: "{{ stage_item._test_config.directory_mode }}"
+    # TODO - mode should be renamed to file_mode
+    file_mode: "{{ stage_item._test_config.mode }}"
+    file_contents: "{{ stage_item._test_config.file_contents }}"
+
+- name: Verify absent paths
+  include_tasks: verify_absent_path.yml
+  loop: "{{ stage_item._test_config.absent_paths }}"
+  loop_control:
+    loop_var: path
+  when: "'absent_paths' in stage_item._test_config"
