@@ -1,0 +1,4 @@
+FROM {{ item.image }}
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends python3

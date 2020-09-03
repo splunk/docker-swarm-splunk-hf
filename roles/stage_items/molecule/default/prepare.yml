@@ -67,3 +67,12 @@
       file:
         path: "{{ dest }}"
         state: directory
+
+- name: configure web servers
+  hosts: web_servers
+  gather_facts: no
+  tasks:
+    - name: copy files into htdocs
+      copy:
+        src: "hosts/{{ inventory_hostname }}/files/"
+        dest: /usr/local/apache2/htdocs/

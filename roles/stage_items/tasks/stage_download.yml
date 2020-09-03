@@ -1,0 +1,28 @@
+- name: "{{ stage_item.url }} download file"
+  get_url:
+    url: "{{ stage_item.url }}"
+    dest: "{{ stage_dest }}"
+    mode: "{{ stage_item.mode | default(omit) }}"
+  register: downloaded_file
+  # downloaded_file is as it would be _before_ changed_when is considered
+  # so we reference it here to see what .changed would be if we didn't override it
+  # if we are going to unarchive the file, consider the download a non-change (because we'll delete it after unarchive)
+  changed_when: downloaded_file.changed and not stage_item.unarchive|default(false)
+
+- name: "{{ stage_item.url }} unarchive downloaded file"
+  when: stage_item.unarchive | default(false)
+  block:
+    - name: "{{ stage_dest }} unarchive"
+      unarchive:
+        src: "{{ downloaded_file.dest }}"
+        remote_src: true
+        dest: "{{ stage_dest }}"
+        mode: "{{ stage_item.mode | default(omit) }}"
+
+    - name: "{{ stage_dest }} remove archive file"
+      file:
+        path: "{{ downloaded_file.dest }}"
+        state: absent
+      # removing the archive file is a non-change, because it will be re-downloaded every time
+      # the unarchive step is the real indication of changed/not changed
+      changed_when: false

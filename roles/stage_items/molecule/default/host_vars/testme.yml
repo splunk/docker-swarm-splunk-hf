@@ -6,6 +6,8 @@ staging_paths:
       is_base_path: true
     splunk: {}
     git: {}
+    download: {}
+    download-override-mode: {}
 
 # dest points to a temporary path
 # it is passed from the calling role
@@ -333,3 +335,59 @@ stage_items:
       # mode must be specified as a string representation of an octal integer for testing
       directory_mode: "0755"
       mode: "0644"
+
+  # test staging files via download
+  - type: download
+    url: http://webserver/downloaded_file
+    dest: download
+
+    _test_config:
+      paths:
+        - /root/staged_items/download/downloaded_file
+      file_contents: "This file was downloaded.\n"
+      directory_mode: "0755"
+      mode: "0644"
+
+  # test staging files via download, but with modified mode
+  - type: download
+    url: http://webserver/downloaded_file
+    dest: download-override-mode
+    mode: "0600"
+
+    _test_config:
+      paths:
+        - /root/staged_items/download-override-mode/downloaded_file
+      file_contents: "This file was downloaded.\n"
+      directory_mode: "0755"
+      mode: "0600"
+
+  # test staging files via downloaded archive
+  - type: download
+    url: http://webserver/downloaded-archive.tgz
+    unarchive: yes
+    dest: download
+
+    _test_config:
+      paths:
+        - /root/staged_items/download/unarchived_directory/
+        - /root/staged_items/download/unarchived_directory/unarchived_file
+        - /root/staged_items/download/unarchived_file
+      file_contents: "This file was in an archive.\n"
+      directory_mode: "0700"
+      mode: "0600"
+
+  # test staging files via downloaded archive, but with modified mode
+  - type: download
+    url: http://webserver/downloaded-archive-override-mode.tgz
+    unarchive: yes
+    dest: download-override-mode
+    mode: "u=rwx,g=,o="
+
+    _test_config:
+      paths:
+        - /root/staged_items/download-override-mode/unarchived_directory/
+        - /root/staged_items/download-override-mode/unarchived_directory/unarchived_file
+        - /root/staged_items/download-override-mode/unarchived_file
+      file_contents: "This file was in an archive.\n"
+      directory_mode: "0700"
+      mode: "0700"
