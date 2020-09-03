@@ -1,0 +1,8 @@
+- name: "Stat {{ path }}"
+  stat:
+    path: "{{ path }}"
+  register: path_stat
+
+- name: "Verify {{ path }} is absent"
+  assert:
+    that: not path_stat.stat.exists

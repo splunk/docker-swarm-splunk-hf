@@ -1,0 +1,11 @@
+- name: "Read {{ file_path }} contents"
+  slurp:
+    src: "{{ file_path }}"
+  register: slurped_file
+
+- name: "Verify {{ file_path }} contents"
+  assert:
+    that:
+      # make sure file_contents isn't interpreted as a serialized structure (and in fail_msg)
+      - slurped_file.content|b64decode == contents|string
+    fail_msg: "Expected {{ contents|string }}, got {{ slurped_file.content|b64decode }}"

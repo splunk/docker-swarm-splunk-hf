@@ -1,0 +1,17 @@
+---
+- name: Verify paths
+  include_tasks: tasks/verify_path.yml
+  loop: "{{ stage_item._test_config.paths | default([]) }}"
+  loop_control:
+    loop_var: path
+  vars:
+    directory_mode: "{{ stage_item._test_config.directory_mode }}"
+    file_mode: "{{ stage_item._test_config.mode }}"
+    # make sure file_contents isn't interpreted as a serialized structure
+    file_contents: "{{ stage_item._test_config.file_contents | string }}"
+
+- name: Verify absent paths
+  include_tasks: tasks/verify_absent_path.yml
+  loop: "{{ stage_item._test_config.absent_paths | default([]) }}"
+  loop_control:
+    loop_var: path

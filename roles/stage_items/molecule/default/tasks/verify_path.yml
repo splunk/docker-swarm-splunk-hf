@@ -1,0 +1,30 @@
+---
+- name: "Stat {{ path }}"
+  stat:
+    path: "{{ path }}"
+  register: path_stat
+
+- name: "Verify {{ path }} exists"
+  assert:
+    that:
+      - path_stat.stat.exists
+
+- name: "Verify {{ path }} directory permissions"
+  assert:
+    that:
+      - path_stat.stat.mode == directory_mode
+  when: path_stat.stat.isdir
+
+- name: "Verify {{ path }} file permissions"
+  assert:
+    that:
+      - path_stat.stat.mode == file_mode
+  when: not path_stat.stat.isdir
+
+- name: "Verify {{ path }} file contents"
+  include_tasks: tasks/verify_file_contents.yml
+  vars:
+    file_path: "{{ path }}"
+    # make sure file_contents isn't interpreted as a serialized structure
+    contents: "{{ file_contents|string }}"
+  when: not path_stat.stat.isdir
