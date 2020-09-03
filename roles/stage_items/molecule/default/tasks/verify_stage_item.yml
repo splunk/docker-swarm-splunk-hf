@@ -6,7 +6,6 @@
     loop_var: path
   vars:
     directory_mode: "{{ stage_item._test_config.directory_mode }}"
-    # TODO - mode should be renamed to file_mode
     file_mode: "{{ stage_item._test_config.mode }}"
     file_contents: "{{ stage_item._test_config.file_contents }}"
 
