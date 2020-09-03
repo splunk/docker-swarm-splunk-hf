@@ -53,7 +53,6 @@ stage_items:
     condition: "{{ 'false_condition' in test_condition_values }}"
 
     _test_config:
-      paths: []
       absent_paths:
         - /root/staged_items/splunk/nothinghere
 
