@@ -17,6 +17,17 @@ platforms:
     # defining a custom network enables DNS resolution of other containers
     networks: [ { name: testnetwork } ]
     pre_build_image: true
+  # httpd won't have this role or tests run against it
+  - name: webserver
+    image: docker.io/library/httpd:2.4
+    groups: [ supporting_hosts, web_servers ]
+    # defining a custom network enables DNS resolution of other containers
+    networks: [ { name: testnetwork } ]
+    pre_build_image: false
+    # build a custom image with python via the below Dockerfile template
+    dockerfile: httpd-Dockerfile.j2
+    # don't prevent the httpd image from doing it's thing
+    override_command: false
 provisioner:
   name: ansible
 verifier:

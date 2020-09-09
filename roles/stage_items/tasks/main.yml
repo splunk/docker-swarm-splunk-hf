@@ -15,9 +15,19 @@
     loop_var: stage_item
   when: "('condition' not in stage_item) or (stage_item.condition)"
 
+- name: create staging_path directory
+  file:
+    # staging_path_absolute_path is defined in vars/main.yml
+    path: "{{ staging_path_absolute_path }}"
+    state: directory
+  loop: "{{ stage_items }}"
+  loop_control:
+    loop_var: stage_item
+
 - include_tasks: "stage_{{ stage_item.type }}.yml"
   vars:
-    stage_dest: "{{ dest }}/{{ '' if 'is_base_path' in staging_paths[stage_item.dest] and staging_paths[stage_item.dest]['is_base_path'] else stage_item.dest }}/{{ stage_item.dest_sub_path | default('') }}"
+    # staging_path_absolute_path is defined in vars/main.yml
+    stage_dest: "{{ staging_path_absolute_path }}/{{ stage_item.dest_sub_path | default('') }}"
   loop: "{{ stage_items }}"
   loop_control:
     loop_var: stage_item
