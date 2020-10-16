@@ -36,6 +36,11 @@ host_build_variants: []
 
 kvstore_disabled: true
 
+# these are the defaults from https://docs.docker.com/engine/reference/builder/#healthcheck
+healthcheck_timeout_seconds: 30
+healthcheck_start_period_seconds: 0
+healthcheck_retries: 3
+
 healthcheck_command: |-
   {% if healthcheck_interval_seconds is defined and healthcheck_metrics_series is defined %}
   {{ splunk_home }}/bin/splunk cmd python {{ splunk_home }}/metrics_healthcheck.py
