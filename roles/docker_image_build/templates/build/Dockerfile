@@ -58,5 +58,10 @@ WORKDIR {{ splunk_home }}
 ENTRYPOINT {{ entrypoint }}
 
 {% if healthcheck_command %}
-HEALTHCHECK --interval={{ healthcheck_interval_seconds }}s CMD {{ healthcheck_command }}
+HEALTHCHECK \
+    --interval={{ healthcheck_interval_seconds }}s \
+    --timeout={{ healthcheck_timeout_seconds }}s \
+    --start-period={{ healthcheck_start_period_seconds }}s \
+    --retries={{ healthcheck_retries }} \
+    CMD {{ healthcheck_command }}
 {% endif %}
