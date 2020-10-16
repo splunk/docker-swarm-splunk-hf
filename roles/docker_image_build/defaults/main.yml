@@ -39,7 +39,10 @@ kvstore_disabled: true
 # these are the defaults from https://docs.docker.com/engine/reference/builder/#healthcheck
 healthcheck_interval_seconds: 30
 healthcheck_timeout_seconds: 30
-healthcheck_start_period_seconds: 0
+# this differs from the documented default of 0
+# when explicitly specifying 0s for --start-period, this error results:
+#   Interval "start-period" cannot be less than 1ms
+healthcheck_start_period_seconds: 1
 healthcheck_retries: 3
 
 healthcheck_command: |-
