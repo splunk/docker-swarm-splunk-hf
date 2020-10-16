@@ -131,9 +131,6 @@ In [organized-environment/inventory.yml](examples/organized-environment/inventor
     # remember every image must have a version number
     version: 1.0.0
     
-    # perform the check every 30 seconds
-    healthcheck_interval_seconds: 30
-
     # in splunk's metrics.log
     # for the per_index_thruput group
     healthcheck_metrics_group: per_index_thruput
