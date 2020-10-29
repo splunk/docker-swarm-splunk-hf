@@ -52,6 +52,20 @@ all:
               # expect to see non-zero thruput no older than 60 seconds
               healthcheck_allowed_age_seconds: 6
 
+            # enable healthcheck for the _internal and _audit indexes
+            internal_introspection_healthchecks_forwarder:
+              version: 1.0.0
+
+              metrics_healthchecks:
+                - group: per_index_thruput
+                  series: _internal
+                  # 6 seconds will show how this check is sometimes stale, then recovers
+                  allowed_age_seconds: 6
+                - group: per_index_thruput
+                  series: _introspection
+                  # 60 seconds should always show this check as fresh
+                  allowed_age_seconds: 60
+
             # bind mount
             volumes_mounted_forwarder:
               version: 1.0.0

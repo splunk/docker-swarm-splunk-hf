@@ -17,7 +17,7 @@ default_metrics_healthchecks: |
   {% if healthcheck_metrics_series is defined %}
     - group: "{{ healthcheck_metrics_group }}"
       series: "{{ healthcheck_metrics_series }}"
-      allowed_age: {{ healthcheck_allowed_age_seconds }}
+      allowed_age_seconds: {{ healthcheck_allowed_age_seconds }}
   {% else %}
     []
   {% endif %}

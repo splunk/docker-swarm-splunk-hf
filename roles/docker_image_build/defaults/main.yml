@@ -46,7 +46,7 @@ healthcheck_start_period_seconds: 1
 healthcheck_retries: 3
 
 healthcheck_command: |-
-  {% if healthcheck_metrics_series is defined %}
+  {% if metrics_healthchecks %}
   python3 {{ splunk_home }}/metrics_healthcheck.py
   {% endif %}
 
