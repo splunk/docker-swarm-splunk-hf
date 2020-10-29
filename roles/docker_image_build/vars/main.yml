@@ -17,6 +17,8 @@ build_variants: "{{ role_build_variants + common_build_variants + host_build_var
 role_apt_packages:
   # Dockerfile uses curl, so it must be installed
   - curl
+  - python3
+  - python3-dateutil
 
 
 # locations that can be copied/templated to, and will be copied to the docker image one at a time
@@ -72,7 +74,13 @@ role_stage_items:
 
     - src: "{{ docker_image_build_role_path }}/templates/metrics_healthcheck"
       dest: splunk
-      condition: "{{ install_splunk and healthcheck_metrics_series is defined }}"
+      condition: "{{ install_splunk and metrics_healthchecks }}"
       type: template
+
+    - src: "{{ docker_image_build_role_path }}/files/metricscheck"
+      condition: "{{ install_splunk and metrics_healthchecks }}"
+      type: copy
+      dest: splunk
+      dest_sub_path: metricscheck
 
 # role_volumes is defined in group_vars/docker_services, since docker_service_deploy also needs it
