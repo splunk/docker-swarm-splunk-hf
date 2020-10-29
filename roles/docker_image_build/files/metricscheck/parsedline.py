@@ -4,8 +4,6 @@ Components related to ParsedLine class
 from datetime import datetime
 import re
 
-from dateutil import tz
-
 
 class ParsedLine:
     """
@@ -19,17 +17,17 @@ class ParsedLine:
             (?P<hour>[0-9]{2}):(?P<minute>[0-9]{2}):(?P<second>[0-9]{2})\\.(?P<milliseconds>[0-9]{3})
             \\s
             (?P<offset_direction>[+-])(?P<offset_hours>[0-9]{2})(?P<offset_minutes>[0-9]{2})
-            \\s
-            INFO
-            \\s\\s
-            Metrics
-            \\s
-            -
-            \\s
-            group=(?P<group>[^,]+),
-            \\s
-            series="(?P<series>[^"]+)",
         )
+        \\s
+        INFO
+        \\s\\s
+        Metrics
+        \\s
+        -
+        \\s
+        group=(?P<group>[^,]+),
+        \\s
+        series="(?P<series>[^"]+)",
     ''', re.VERBOSE)
 
     def __init__(self, line):
@@ -65,24 +63,7 @@ class ParsedLine:
         :return: Parsed Datetime object for the timestamp in matched line
         """
 
-        # don't bother with milliseconds
-        timestamp_component_names = ['year', 'month', 'day', 'hour', 'minute', 'second']
-        timestamp_components = map(lambda x: int(self._match.group(x)), timestamp_component_names)
-
-        tz_offset_direction = self._match.group('offset_direction')
-        tz_offset_hours = int(self._match.group('offset_hours'))
-        tz_offset_minutes = int(self._match.group('offset_minutes'))
-        tz_offset_seconds = 0
-        if tz_offset_direction == '-':
-            tz_offset_seconds -= tz_offset_hours * 3600
-            tz_offset_seconds -= tz_offset_minutes * 60
-        else:
-            tz_offset_seconds += tz_offset_hours * 3600
-            tz_offset_seconds += tz_offset_minutes * 60
-
-        timestamp_tz = tz.tzoffset(self._match.groups('offset'), tz_offset_seconds)
-
-        return datetime(*timestamp_components, tzinfo=timestamp_tz)
+        return datetime.strptime(self._match["timestamp"], "%m-%d-%Y %H:%M:%S.%f %z")
 
     def assert_matches(self):
         """
