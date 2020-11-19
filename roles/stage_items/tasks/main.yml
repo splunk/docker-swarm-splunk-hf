@@ -2,9 +2,11 @@
   debug:
     msg: "{{ item.condition }}"
   loop: "{{ stage_items }}"
+  loop_control:
+    label: "{{ item.condition|default('no condition, skip') }}"
   when: "'condition' in item"
 
-- name: ensure dest staging_path exists
+- name: ensure dest is a valid staging_path
   assert:
     that: stage_item.dest in staging_paths
     fail_msg: "{{ stage_item.dest }} is not a configured staging_path"
@@ -13,16 +15,19 @@
   loop: "{{ stage_items }}"
   loop_control:
     loop_var: stage_item
-  when: "('condition' not in stage_item) or (stage_item.condition)"
+    label: "{{ stage_item.dest }}"
+  when: "stage_item.condition|default(True)"
 
 - name: create staging_path directory
   file:
     # staging_path_absolute_path is defined in vars/main.yml
+    # it references stage_item
     path: "{{ staging_path_absolute_path }}"
     state: directory
   loop: "{{ stage_items }}"
   loop_control:
     loop_var: stage_item
+    label: "{{ staging_path_absolute_path }}"
 
 - include_tasks: "stage_{{ stage_item.type }}.yml"
   vars:
@@ -31,4 +36,8 @@
   loop: "{{ stage_items }}"
   loop_control:
     loop_var: stage_item
-  when: "('condition' not in stage_item) or (stage_item.condition)"
+    # when this was implemented, include_tasks with a loop doesn't print a label,
+    # but explicitly setting label to prevent unexpected sensitive-value discloser
+    # if in the future ansible _does_ print a label for include_tasks
+    label: redacted
+  when: "stage_item.condition|default(True)"
