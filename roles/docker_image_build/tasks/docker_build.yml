@@ -20,7 +20,7 @@
       path: "{{ docker_build_directory.path }}"
       # enable skipping of pulling new FROM images
       # https://www.docker.com/increase-rate-limits
-      # left to use the default docker_image default, which is *currently* no, but will change in community.general 2.0
+      # left to use the default docker_image default, which is *currently* yes, but will change in community.general 2.0
       pull: "{{ docker_build_pull | default(omit) }}"
   become: "{{ docker_become_user is defined }}"
   become_user: "{{ docker_become_user|default(omit) }}"
