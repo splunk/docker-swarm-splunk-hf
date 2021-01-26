@@ -18,8 +18,10 @@
     push: no
     build:
       path: "{{ docker_build_directory.path }}"
-      # explicitly fetch updates to the FROM image, so things like "latest" continue to be up to date
-      pull: yes
+      # enable skipping of pulling new FROM images
+      # https://www.docker.com/increase-rate-limits
+      # left to use the default docker_image default, which is *currently* no, but will change in community.general 2.0
+      pull: "{{ docker_build_pull | default(omit) }}"
   become: "{{ docker_become_user is defined }}"
   become_user: "{{ docker_become_user|default(omit) }}"
   register: docker_build_result
