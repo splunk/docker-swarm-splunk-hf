@@ -67,8 +67,7 @@ role_stage_items:
 
     - src: "{{ docker_image_build_role_path }}/templates/kvstore_disable"
       dest: splunk
-      # leave kvstore enabled for non-primary images, since they are often used as all-in-one instances.
-      condition: "{{ install_splunk and kvstore_disabled and build_vars.primary_build }}"
+      condition: "{{ install_splunk and kvstore_disabled }}"
       type: template
 
     - src: "{{ docker_image_build_role_path }}/templates/metrics_healthcheck"
