@@ -1,5 +1,0 @@
-- name: docker image ls
-  command:
-    cmd: "docker image ls {{ repository_deploy_image }}"
-  become: "{{ docker_become_user is defined }}"
-  become_user: "{{ docker_become_user|default(omit) }}"
