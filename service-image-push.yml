@@ -1,0 +1,5 @@
+- hosts: docker_services
+  # nothing here should rely on gathered facts
+  gather_facts: no
+  roles:
+    - role: docker_service_image_push
