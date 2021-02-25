@@ -1,0 +1,7 @@
+docker_packages:
+  # installing docker-ce on RHEL/CentOS would result in these first two getting installed along with it
+  # but they are listed here separately to make it easier to see which components you may want to set
+  # specific versions for
+  - docker-ce-cli
+  - containerd.io
+  - docker-ce

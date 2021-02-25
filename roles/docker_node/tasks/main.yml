@@ -1,14 +1,21 @@
-- name: install docker
+- name: install docker packages
   package:
-    name: docker-ce
+    name: "{{ item }}"
     state: present
   become: true
-  register: docker_install_result
+  register: docker_install_results
+  loop: "{{ docker_packages }}"
+
+- name: check docker_install_results status for any changes
+  set_fact:
+    docker_install_results_changed: true
+  loop: "{{ docker_install_results.results }}"
+  when: item.changed
 
 # docker needs to have been started before /etc/docker is created
 # using a handler would defer the start until after the play was finished
 - include_tasks: docker-enable-start-restart.yml
-  when: docker_install_result.changed
+  when: docker_install_results_changed is defined and docker_install_results_changed
 
 - name: install /etc/docker/daemon.json
   template:
