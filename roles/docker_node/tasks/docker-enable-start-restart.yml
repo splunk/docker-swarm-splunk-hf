@@ -2,5 +2,5 @@
   service:
     name: docker
     enabled: yes
-    state: restarted
+    state: "{{ docker_service_state | default('started') }}"
   become: true

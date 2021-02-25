@@ -1,6 +1,8 @@
 - hosts: docker_nodes
   roles:
     - role: docker_node
+  # because docker might be restarted by this role, only run it on one host at a time
+  serial: 1
 
 - hosts: docker_swarm_nodes
   roles:

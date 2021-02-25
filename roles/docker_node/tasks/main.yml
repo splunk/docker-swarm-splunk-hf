@@ -9,16 +9,16 @@
     - "{{ containerd_io_package }}"
     - "{{ docker_ce_package }}"
 
-- name: check docker_install_results status for any changes
+- name: flag docker service for restart if any changes to installed packages
   set_fact:
-    docker_install_results_changed: true
+    docker_service_state: restarted
   loop: "{{ docker_install_results.results }}"
   when: item.changed
 
-# docker needs to have been started before /etc/docker is created
-# using a handler would defer the start until after the play was finished
+# this will make use of the docker_service_state value set above
+# this will always get run to at least ensure the service is enabled/started, but will
+# also restart the service if any chnages to the packages were made
 - include_tasks: docker-enable-start-restart.yml
-  when: docker_install_results_changed is defined and docker_install_results_changed
 
 - name: install /etc/docker/daemon.json
   template:
@@ -28,4 +28,6 @@
   register: docker_daemon_json_result
 
 - include_tasks: docker-enable-start-restart.yml
+  vars:
+    docker_service_state: restarted
   when: docker_daemon_json_result.changed
