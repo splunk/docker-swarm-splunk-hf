@@ -5,9 +5,9 @@
   become: true
   register: docker_install_results
   loop:
-    - "{{ docker-ce-cli_package }}"
-    - "{{ containerd.io_package }}"
-    - "{{ docker-ce_package }}"
+    - "{{ docker_ce_cli_package }}"
+    - "{{ containerd_io_package }}"
+    - "{{ docker_ce_package }}"
 
 - name: check docker_install_results status for any changes
   set_fact:
