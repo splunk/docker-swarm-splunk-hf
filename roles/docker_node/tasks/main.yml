@@ -1,14 +1,24 @@
-- name: install docker
+- name: install docker packages
   package:
-    name: docker-ce
+    name: "{{ item }}"
     state: present
   become: true
-  register: docker_install_result
+  register: docker_install_results
+  loop:
+    - "{{ docker_ce_cli_package }}"
+    - "{{ containerd_io_package }}"
+    - "{{ docker_ce_package }}"
 
-# docker needs to have been started before /etc/docker is created
-# using a handler would defer the start until after the play was finished
+- name: flag docker service for restart if any changes to installed packages
+  set_fact:
+    docker_service_state: restarted
+  loop: "{{ docker_install_results.results }}"
+  when: item.changed
+
+# this will make use of the docker_service_state value set above
+# this will always get run to at least ensure the service is enabled/started, but will
+# also restart the service if any chnages to the packages were made
 - include_tasks: docker-enable-start-restart.yml
-  when: docker_install_result.changed
 
 - name: install /etc/docker/daemon.json
   template:
@@ -17,5 +27,8 @@
   become: true
   register: docker_daemon_json_result
 
+# this could be done via a handler, but since it would only be used once not bothering
 - include_tasks: docker-enable-start-restart.yml
+  vars:
+    docker_service_state: restarted
   when: docker_daemon_json_result.changed
