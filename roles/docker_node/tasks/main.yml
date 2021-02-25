@@ -27,6 +27,7 @@
   become: true
   register: docker_daemon_json_result
 
+# this could be done via a handler, but since it would only be used once not bothering
 - include_tasks: docker-enable-start-restart.yml
   vars:
     docker_service_state: restarted
