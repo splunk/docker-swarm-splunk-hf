@@ -3,12 +3,19 @@
     name: docker-ce
     state: present
   become: true
-    - Enable and start or restart docker
+  register: docker_install_result
+
+# docker needs to have been started before /etc/docker is created
+# using a handler would defer the start until after the play was finished
+- include_tasks: docker-enable-start-restart.yml
+  when: docker_install_result.changed
 
 - name: install /etc/docker/daemon.json
   template:
     src: daemon.json
     dest: /etc/docker/daemon.json
   become: true
-  notify:
-    - Enable and start or restart docker
+  register: docker_daemon_json_result
+
+- include_tasks: docker-enable-start-restart.yml
+  when: docker_daemon_json_result.changed
