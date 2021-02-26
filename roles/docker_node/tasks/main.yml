@@ -20,6 +20,9 @@
 # also restart the service if any chnages to the packages were made
 - include_tasks: docker-enable-start-restart.yml
 
+- name: make sure docker is running
+  include_tasks: docker-daemon-running.yml
+
 - name: install /etc/docker/daemon.json
   template:
     src: daemon.json
@@ -32,3 +35,6 @@
   vars:
     docker_service_state: restarted
   when: docker_daemon_json_result.changed
+
+- name: make sure docker is running
+  include_tasks: docker-daemon-running.yml
