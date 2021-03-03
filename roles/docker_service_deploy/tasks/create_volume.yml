@@ -8,7 +8,7 @@
     group: "{{ volume_group }}"
   become: true
   when: volume_type == 'nfs' and volume_create_path != ''
-  tags: [volumes]
+  tags: volumes
 
 # each node needs to be individually configured for the volume
 - name: create volume
@@ -24,4 +24,4 @@
   become_user: "{{ docker_become_user|default(omit) }}"
   loop: "{{ groups['docker_swarm_nodes'] }}"
   delegate_to: "{{ item }}"
-  tags: [volumes]
+  tags: volumes

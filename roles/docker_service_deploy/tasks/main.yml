@@ -12,7 +12,7 @@
   # the _volume.yml tasks also use loop, so here we use a different loop_var
   loop_control:
     loop_var: volume_item
-  tags: [volumes]
+  tags: volumes
 
 - name: handle config changes
   block:
@@ -55,7 +55,7 @@
   # the _volume.yml tasks also use loop, so here we use a different loop_var
   loop_control:
     loop_var: volume_item
-  tags: [ volumes ]
+  tags: volumes
 
 - name: remove stale docker configs
   include_tasks: remove_configs.yml
