@@ -1,0 +1,3 @@
+docker_ce_cli_package: docker-cee-cli
+containerd_io_package: containerd.io
+docker_ce_package: docker-ce

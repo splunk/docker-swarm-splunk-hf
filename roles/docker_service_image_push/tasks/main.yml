@@ -1,0 +1,36 @@
+- name: docker image inspect - all nodes
+  command:
+    cmd: "docker image inspect {{ repository_deploy_image }}"
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"
+  loop: "{{ groups['docker_swarm_nodes'] }}"
+  loop_control:
+    loop_var: docker_swarm_node
+    label: "{{ docker_swarm_node }}"
+  delegate_to: "{{ docker_swarm_node }}"
+  register: image_inspect_result
+  failed_when: false
+
+- name: look for any successful image_inspect_result
+  set_fact:
+    image_inspect_results_successful_node: "{{ item.docker_swarm_node }}"
+  loop: "{{ image_inspect_result.results }}"
+  loop_control:
+    label: "{{ item.docker_swarm_node }}"
+  when: item.rc == 0
+
+- name: ensure a successful node was found
+  assert:
+    that:
+      - image_inspect_results_successful_node is defined
+
+# the docker_image builtin provided by ansible is tricky to coerce into pushing when no other changes are necessary
+# in image_push we untag the image, then tag/push at the same time
+# since this role is intended to be run against a production service, we don't want to untag images in it
+# so we just use the command module instead
+- name: docker image push - found node
+  command:
+    cmd: "docker image push {{ repository_deploy_image }}"
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"
+  delegate_to: "{{ image_inspect_results_successful_node }}"

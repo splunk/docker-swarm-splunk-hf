@@ -18,6 +18,7 @@ role_apt_packages:
   # Dockerfile uses curl, so it must be installed
   - curl
   - python3
+  - tzdata
 
 
 # locations that can be copied/templated to, and will be copied to the docker image one at a time

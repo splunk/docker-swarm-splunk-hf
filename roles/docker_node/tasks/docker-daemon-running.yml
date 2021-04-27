@@ -1,0 +1,10 @@
+# before moving on, make sure the docker daemon is actually up, by asking it for a list of images
+- name: ask docker for a list of images
+  docker_image_info: {}
+  become: "{{ true if docker_become_user is defined else false }}"
+  become_user: "{{ docker_become_user }}"
+  # try every 10 seconds for a minute to see if the service comes up
+  delay: 10
+  retries: 6
+  register: docker_image_info_result
+  until: docker_image_info_result is not failed
