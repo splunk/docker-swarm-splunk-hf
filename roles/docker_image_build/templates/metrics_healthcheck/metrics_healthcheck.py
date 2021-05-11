@@ -2,7 +2,10 @@ import sys
 import json
 from datetime import datetime, timezone
 
-from metricscheck.metricschecks import MetricsChecks
+# this is ugly, but it's:
+#    package      module       file                 class
+# the upstream package should probably be fixed to be less awful
+from metricscheck.metricscheck.metricschecks import MetricsChecks
 
 
 config_filename = "{{ metrics_healthcheck_config_filename }}"
