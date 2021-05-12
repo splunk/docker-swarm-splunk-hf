@@ -1,3 +1,20 @@
+# Version unlocking the packages, if you want to update the docker packages.
+- name: install versionlock package
+  package:
+    name: "yum-plugin-versionlock"
+    state: present
+
+- name: Version Unlock Docker packages
+  community.general.yum_versionlock:
+    state: absent
+    name:
+    - containerd-io
+    - docker-ce
+    - docker-ce-cli
+  register: lock_status
+# If packages were already locked, the unlock/lock will not be a change.
+  changed_when: lock_status is not changed
+
 - name: install docker packages
   package:
     name: "{{ item }}"
@@ -38,3 +55,14 @@
 
 - name: make sure docker is running
   include_tasks: docker-daemon-running.yml
+
+# Version locking the packages, so other package update operations do not interfere
+# with docker packages.
+- name: Version Lock Docker packages
+  community.general.yum_versionlock:
+    state: present
+    name:
+    - containerd-io
+    - docker-ce
+    - docker-ce-cli
+  changed_when: lock_status is changed
