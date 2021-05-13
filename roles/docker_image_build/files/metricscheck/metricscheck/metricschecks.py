@@ -5,6 +5,8 @@ Components related to MetricsChecks
 from glob import glob
 from os import path
 
+from file_read_backwards import FileReadBackwards
+
 from .parsedline import ParsedLine
 from .agecheck import AgeCheck
 
@@ -34,7 +36,7 @@ class MetricsChecks:
         """
         logs_glob = path.join(self._log_dir, "metrics.log*")
 
-        for file in glob(logs_glob):
+        for file in sorted(glob(logs_glob)):
             yield file
 
     def lines(self):
@@ -42,7 +44,7 @@ class MetricsChecks:
         :return: Generator of metrics.log lines
         """
         for filename in self.filenames():
-            with open(filename) as open_file:
+            with FileReadBackwards(filename, encoding="utf-8") as open_file:
                 for line in open_file:
                     yield line
 
@@ -76,7 +78,17 @@ class MetricsChecks:
         """
         for group_name, group in self._checks.items():
             for series_name, check in group.items():
-                yield (group_name, series_name, check)
+                yield group_name, series_name, check
+
+    def all_checks_seen(self):
+        """
+        :return: True if all group/series combinations for this MetricsChecks object have been seen.
+        """
+        for _, _, check in self.group_series_checks():
+            if not check.has_been_seen():
+                return False
+
+        return True
 
     def process(self):
         """
@@ -91,6 +103,11 @@ class MetricsChecks:
             for check_group, check_series, check in self.group_series_checks():
                 check_seen = bool((check_group, check_series) == (seen_group, seen_series))
                 check.updated_at(timestamp, seen=check_seen)
+
+            if self.all_checks_seen():
+                # stop processing lines after all group/series combinations have been seen,
+                # because no newer times will be seen for older lines/files
+                return
 
     def stale_group_series_checks_at(self, time):
         """
