@@ -57,3 +57,7 @@ entrypoint_user: "{{ splunk_user_id }}:{{ splunk_group_id }}"
 # the provided entrypoint.sh (defined above) runs splunk
 # if install_splunk is set to false entrypoint also needs to be overridden
 install_splunk: true
+
+# set to false if you have a configuration that is known not to pass btool check,
+# but should successfully build anyway (TAs with incomplete README/ contents, etc.)
+btool_check: true
