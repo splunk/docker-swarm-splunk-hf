@@ -54,6 +54,11 @@ USER {{ entrypoint_user }}
 # dump into $SPLUNK_HOME for exec, etc
 WORKDIR {{ splunk_home }}
 
+# btool check needs to succeed before moving on
+{% if install_splunk and btool_check %}
+RUN {{ splunk_home }}/bin/splunk btool check
+{% endif %}
+
 # entrypoint.sh may do run-time configurations prior to starting splunk
 ENTRYPOINT {{ entrypoint }}
 
