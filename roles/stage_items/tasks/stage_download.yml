@@ -6,6 +6,7 @@
     headers: "{{ stage_item.headers | default(omit) }}"
     username: "{{ stage_item.username | default(omit) }}"
     password: "{{ stage_item.password | default(omit) }}"
+    timeout: "{{ stage_item.timeout | default(stage_item_download_timeout) | default(omit) }}"
   register: downloaded_file
   # downloaded_file is as it would be _before_ changed_when is considered
   # so we reference it here to see what .changed would be if we didn't override it
