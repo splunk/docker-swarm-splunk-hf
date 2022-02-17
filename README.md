@@ -238,6 +238,7 @@ a value of `True` when the non-standalone image is built.  Thus we have these im
 * Disables indexes
 * Disables splunkweb
 * Sets license master
+* Sets pass4SymKey
 
 The set of included stage items attempts to get you on your feet with this process as soon as possible.  These are
 configurations we consider standard and reasonable for almost all instances.
