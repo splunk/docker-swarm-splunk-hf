@@ -1,5 +1,11 @@
 FROM ubuntu:{{ ubuntu_tag }} AS splunk_hf_base
 
+{% if docker_labels is defined %}
+{% for label in docker_labels %}
+LABEL "{{ label.name }}"="{{ label.value }}"
+{% endfor %}
+{% endif %}
+
 RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime \
   && groupadd {{ splunk_group }} -g {{ splunk_group_id }} \
   && useradd {{ splunk_user }} -m -d {{ splunk_home }} -g {{ splunk_group }} -u {{ splunk_user_id }} --shell /bin/bash \

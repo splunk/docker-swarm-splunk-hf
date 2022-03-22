@@ -2,3 +2,4 @@
 *.retry
 *.pyc
 .idea
+.vscode
