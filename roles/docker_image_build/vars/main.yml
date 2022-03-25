@@ -96,7 +96,3 @@ role_run_commands:
   - command: "if [ -f {{ metricscheck_setup | quote }} ]; then python3 {{ metricscheck_setup | quote }} install; fi"
     user: root
     group: root
-
-role_docker_labels:
-  - name: org.opencontainers.image.base.name
-    value: "docker.io/library/ubuntu:{{ ubuntu_tag }}"
