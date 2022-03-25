@@ -14,7 +14,7 @@ run_commands: "{{ role_run_commands + common_run_commands + host_run_commands }}
 
 build_variants: "{{ role_build_variants + common_build_variants + host_build_variants }}"
 
-docker_labels: "{{ role_docker_labels | combine(common_docker_labels) | combine(host_docker_labels) }}"
+docker_labels: "{{ role_docker_labels + common_docker_labels + host_docker_labels }}"
 
 role_apt_packages:
   # Dockerfile uses curl, so it must be installed
@@ -96,3 +96,7 @@ role_run_commands:
   - command: "if [ -f {{ metricscheck_setup | quote }} ]; then python3 {{ metricscheck_setup | quote }} install; fi"
     user: root
     group: root
+
+role_docker_labels:
+  - name: org.opencontainers.image.base.name
+    value: "docker.io/library/ubuntu:{{ ubuntu_tag }}"

@@ -61,3 +61,8 @@ install_splunk: true
 # set to false if you have a configuration that is known not to pass btool check,
 # but should successfully build anyway (TAs with incomplete README/ contents, etc.)
 btool_check: true
+
+# by default include the OCI label for the base image
+role_docker_labels:
+  - name: org.opencontainers.image.base.name
+    value: "docker.io/library/ubuntu:{{ ubuntu_tag }}"
