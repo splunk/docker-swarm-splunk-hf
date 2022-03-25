@@ -9,9 +9,9 @@ splunk_tgz_url: |-
 
 # add docker labels for os and splunk version
 common_docker_labels:
-  - name: image_os
-    value: "ubuntu:{{ ubuntu_tag }}"
-  - name: splunk_version
+  - name: org.opencontainers.image.base.name
+    value: "docker.io/library/ubuntu:{{ ubuntu_tag }}"
+  - name: com.splunk.version
     value: "{{ splunk_version }}"
 
 # set the splunk admin user/password for user-seed.conf
