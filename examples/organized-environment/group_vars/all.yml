@@ -8,7 +8,7 @@ splunk_tgz_url: |-
   "https://www.splunk.com/page/download_track?file={{ splunk_version }}/linux/splunk-{{ splunk_version }}-{{ splunk_build }}-Linux-x86_64.tgz&ac=&wget=true&name=wget&platform=Linux&architecture=x86_64&version={{ splunk_version }}&product=splunk&typed=release"
 
 # add docker labels for os and splunk version
-docker_labels:
+common_docker_labels:
   - name: image_os
     value: "ubuntu:{{ ubuntu_tag }}"
   - name: splunk_version
