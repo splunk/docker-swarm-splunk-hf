@@ -30,4 +30,4 @@
               # against populated lookups to forward results to the indexing tier.  the forwarder license doesn't enable
               # this type of usage.
               license_master_uri: https://lm.example.org:8089
-              splunk_pass4SymmKey: pleasechangeme
+              pass4SymmKey: pleasechangeme

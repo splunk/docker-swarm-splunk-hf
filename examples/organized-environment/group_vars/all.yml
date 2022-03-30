@@ -14,7 +14,7 @@ splunk_admin_password: pleasechangeme
 # specify a license master, but just a dummy here
 license_master_uri: https://lm.example.org:8089
 # specify a pass4SymmKey for the License Master
-splunk_pass4SymmKey: pleasechangeme
+pass4SymmKey: pleasechangeme
 
 # if you need to escalate privilege to a different user to perform docker operations, specify it here
 # docker_become_user:
