@@ -7,6 +7,7 @@
     volume_type: "{{ volume_item.volume_type | default('vanilla') }}"
     volume_owner: "{{ volume_item.owner | default(omit) }}"
     volume_group: "{{ volume_item.group | default(omit) }}"
+    volume_recreate: "{{ volume_item.recreate | default('never') }}"
   when: "(volume_item.mount_type == 'service_volume') and (state|default('present') == 'present') and (volume_item is default_or_present)"
   loop: "{{ volumes }}"
   # the _volume.yml tasks also use loop, so here we use a different loop_var
