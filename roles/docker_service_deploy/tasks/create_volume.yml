@@ -20,7 +20,7 @@
       o: "{{ volume_driver_option_o | default(omit) }}"
       device: "{{ volume_driver_option_device | default(omit) }}"
     state: present
-    recreate: {{ volume_recreate | default('never') }}
+    recreate: "{{ volume_recreate | default('never') }}"
   become: "{{ docker_become_user is defined }}"
   become_user: "{{ docker_become_user|default(omit) }}"
   loop: "{{ groups['docker_swarm_nodes'] }}"
