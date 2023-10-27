@@ -1,0 +1,30 @@
+- name: "{{ stage_item.url }} download object from s3 bucket"
+  # https://docs.ansible.com/ansible/latest/collections/amazon/aws/s3_object_module.html
+  amazon.aws.s3_object:
+    bucket: "{{ stage_item.bucket }}"
+    object: "{{ stage_item.object }}"
+    dest: "{{ stage_dest }}"
+    mode: get
+
+- name: "{{ stage_item.url }} unarchive downloaded file"
+  when: stage_item.unarchive | default(false)
+  block:
+    - name: "{{ stage_dest }} unarchive"
+      unarchive:
+        src: "{{ downloaded_file.dest }}"
+        remote_src: true
+        dest: "{{ stage_dest }}"
+        mode: "{{ stage_item.mode | default(omit) }}"
+
+    - name: "{{ stage_dest }} remove archive file"
+      file:
+        path: "{{ downloaded_file.dest }}"
+        state: absent
+      # removing the archive file is a non-change, because it will be re-downloaded every time
+      # the unarchive step is the real indication of changed/not changed
+      changed_when: false
+# - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
+#   ansible.builtin.file:
+#     path: /etc/foo.conf
+#     state: touch
+#     mode: {{ stage_item.mode }}
