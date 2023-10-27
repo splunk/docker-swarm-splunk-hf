@@ -1,4 +1,4 @@
-- name: "{{ stage_item.url }} download object from s3 bucket"
+- name: "{{ stage_item.object }} download object from s3 bucket"
   # https://docs.ansible.com/ansible/latest/collections/amazon/aws/s3_object_module.html
   amazon.aws.s3_object:
     bucket: "{{ stage_item.bucket }}"
@@ -6,7 +6,7 @@
     dest: "{{ stage_dest }}"
     mode: get
 
-- name: "{{ stage_item.url }} unarchive downloaded file"
+- name: "{{ stage_item.object }} unarchive downloaded object"
   when: stage_item.unarchive | default(false)
   block:
     - name: "{{ stage_dest }} unarchive"
