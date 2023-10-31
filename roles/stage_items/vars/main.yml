@@ -1,5 +1,3 @@
 # this variable is invalid until stage_item is set, which is likely done in a loop
 # but because the variables are evaluated lazily, it still works and cleans up code duplication
 staging_path_absolute_path: "{{ dest }}/{{ '' if 'is_base_path' in staging_paths[stage_item.dest] and staging_paths[stage_item.dest]['is_base_path'] else stage_item.dest }}"
-aws_access_key_id: "{{ s3_access_key }}"
-aws_secret_access_key: "{{ s3_secret_access_key }}"
