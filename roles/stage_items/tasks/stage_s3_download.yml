@@ -16,19 +16,16 @@
 - name: "{{ stage_item.object }} unarchive downloaded object"
   when: stage_item.unarchive | default(false)
   block:
-    - name: "list files"
-      shell: |
-        /usr/bin/gtar -xzf "{{ stage_item.object}}" -C "{{ stage_dest }}"
-    # - name: "{{ stage_dest }} unarchive"
-    #   unarchive:
-    #     src: "{{ stage_item.object }}"
-    #     remote_src: true
-    #     dest: "{{ stage_dest }}"
-    #     mode: "{{ stage_item.mode | default(omit) }}"
+    - name: "{{ stage_dest }} unarchive"
+      unarchive:
+        src: "{{ stage_dest }}/{{{ stage_item.object }}"
+        remote_src: true
+        dest: "{{ stage_dest }}"
+        mode: "{{ stage_item.mode | default(omit) }}"
 
     - name: "{{ stage_dest }} remove archive file"
       file:
-        path: "{{ stage_item.object }}"
+        path: "{{ stage_dest }}/{{ stage_item.object }}"
         state: absent
       # removing the archive file is a non-change, because it will be re-downloaded every time
       # the unarchive step is the real indication of changed/not changed
