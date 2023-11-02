@@ -2,8 +2,17 @@
 # or any accessible location that hosts the splunk .tgz
 # including file:// locations
 # 7.3.4 included here as an example
+splunk_version: 7.3.4
+splunk_build: 13e97039fb65
 splunk_tgz_url: |-
-  https://www.splunk.com/page/download_track?file=7.3.4/linux/splunk-7.3.4-13e97039fb65-Linux-x86_64.tgz&ac=&wget=true&name=wget&platform=Linux&architecture=x86_64&version=7.3.4&product=splunk&typed=release
+  "https://www.splunk.com/page/download_track?file={{ splunk_version }}/linux/splunk-{{ splunk_version }}-{{ splunk_build }}-Linux-x86_64.tgz&ac=&wget=true&name=wget&platform=Linux&architecture=x86_64&version={{ splunk_version }}&product=splunk&typed=release"
+
+# add docker labels for os and splunk version
+common_docker_labels:
+  - name: com.splunk.version
+    value: "{{ splunk_version }}"
+  - name: com.splunk.build-id
+    value: "{{ splunk_build }}"
 
 # set the splunk admin user/password for user-seed.conf
 splunk_admin_user: admin

@@ -30,6 +30,9 @@ host_run_commands: []
 common_build_variants: []
 host_build_variants: []
 
+common_docker_labels: []
+host_docker_labels: []
+
 # these had to be placed in group_vars/docker_services such that they are also available to docker_service_deploy
 #common_volumes: []
 #host_volumes: []
@@ -61,3 +64,8 @@ install_splunk: true
 # set to false if you have a configuration that is known not to pass btool check,
 # but should successfully build anyway (TAs with incomplete README/ contents, etc.)
 btool_check: true
+
+# by default include the OCI label for the base image
+role_docker_labels:
+  - name: org.opencontainers.image.base.name
+    value: "docker.io/library/ubuntu:{{ ubuntu_tag }}"
