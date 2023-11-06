@@ -289,7 +289,13 @@ Now that we've discussed the components of the image definition, let's actually 
 
 #### Prerequisites
 
-TODO - Add them here
+* Ansible v2.8 or higher
+* At least 3 VMs/servers to run the Docker Swarm and the HF services on 
+  * For operating system, we recommend CentOS 7.x
+  * For hardware specs, general recommendation is 1 CPU core/HF and 2 GB memory/HF
+* Shared NFS volume for persistent storage
+  * We recommend the volume has a storage capacity of at least 10 GB/HF that you plan to run in the Swarm - e.g. 100 GB to run 10 HFs
+  * Mount the shared NFS volume on each of your VMs
 
 #### The build playbook
 
@@ -338,8 +344,6 @@ to validation that it is correct.
 #### Prerequisites
 
 * Operational Docker Swarm environment.
-
-TODO - Add Swarm bringup playbooks and documentation.
 
 #### The deploy playbook
 
