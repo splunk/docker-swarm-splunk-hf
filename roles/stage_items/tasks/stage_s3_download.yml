@@ -2,9 +2,9 @@
   # https://docs.ansible.com/ansible/latest/collections/amazon/aws/s3_object_module.html
   amazon.aws.s3_object:
     bucket: "{{ stage_item.bucket }}"
-    object: "{{stage_item.object_sub_path }}/{{ stage_item.object }}"
-    dest: "{{ stage_dest }}/{{ stage_item.object }}" # filename only, cannot include path, otherwise, download will fail
-    access_key: "{{ s3_access_key }}"
+    object: "{{ stage_item.object }}"
+    dest: "{{ stage_dest }}/{{ stage_item.object | basename }}" # filename only, cannot include path, otherwise, download will fail
+    access_key: "{{ s3_access_key_id }}"
     secret_key: "{{ s3_secret_access_key }}"
     mode: get
   register: downloaded_file
@@ -18,7 +18,7 @@
   block:
     - name: "{{ stage_dest }} unarchive"
       unarchive:
-        src: "{{ stage_dest }}/{{ stage_item.object }}"
+        src: "{{ stage_dest }}/{{ stage_item.object | basename }}"
         remote_src: true
         dest: "{{ stage_dest }}"
         mode: "{{ stage_item.mode | default(omit) }}"
