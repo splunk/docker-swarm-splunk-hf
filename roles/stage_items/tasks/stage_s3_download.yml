@@ -25,7 +25,7 @@
 
     - name: "{{ stage_dest }} remove archive file"
       file:
-        path: "{{ stage_dest }}/{{ stage_item.object }}"
+        path: "{{ stage_dest }}/{{ stage_item.object | basename  }}"
         state: absent
       # removing the archive file is a non-change, because it will be re-downloaded every time
       # the unarchive step is the real indication of changed/not changed
