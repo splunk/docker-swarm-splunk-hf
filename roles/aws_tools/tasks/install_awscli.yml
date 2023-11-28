@@ -1,0 +1,28 @@
+- name: Install AWS CLI
+  when: awscli_command_path.rc != 0
+  block:
+    - name: Download AWS CLI
+      get_url: 
+        url: "https://awscli.amazonaws.com/{{ awscli_package }}"
+        dest: "{{ awscli_stage_dest }}"
+      register: downloaded_awscli_archive
+    
+    - name: Unarchive "{{ awscli_stage_archive.dest }}"
+      unarchive:
+        src: "{{ downloaded_awscli_archive.dest }}"
+        dest: "{{ awscli_stage_dest }}"
+      register: unarchive_awscli
+      when: downloaded_awscli_archive.rc == "0"
+
+    - name: Install AWS CLI
+      shell: "{{ unarchive_awscli.dest }}/install -i {{ awscli_instdir }} -b {{ awscli_bindir }}"
+      become: yes
+
+    - name: Remove temp files
+      file:
+        state: absent
+        path: "{{ item }}"
+        with_items:
+          - "{{ downloaded_awscli_archive.dest }}"
+          - "{{ unarchive_awscli.dest }}"
+

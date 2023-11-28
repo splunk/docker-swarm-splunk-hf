@@ -321,6 +321,16 @@ If all goes well, you should have six new docker images:
 * Changes made to the [inventory hosts](examples/organized-environment/inventory.yml) list for:
   * docker_nodes
 
+#### Pushing to an ECR repository
+
+To use a ECR repository on AWS, set `is_ecr_registry: true` this will call the `aws_tools` role and install the aws cli on the build host, and grab the password for `docker_login` to use.
+
+The following variables need to be set to use a ECR repository:
+* ecr_access_key_id
+* ecr_secret_access_key
+* ecr_aws_region
+* aws_ecr_username (defaults to `AWS`)
+
 #### The push playbook
 
 From the directory containing this set of playbooks, run:

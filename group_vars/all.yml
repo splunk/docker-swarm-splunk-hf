@@ -7,7 +7,7 @@ host_volumes: []
 volumes: "{{ role_volumes + common_volumes + host_volumes }}"
 
 docker_image_name: "{{ image_name | default(inventory_hostname) }}"
-repository: "{{ registry }}/{{ repository_path }}"
+repository: "{{ registry }}{{ repository_path }}"
 # multiple build variants are pushed, so repository_push_image references build_vars.tag
 repository_push_image: "{% if repository is defined %}{{ repository }}/{% endif %}{{ docker_image_name }}:{{ build_vars.tag }}"
 # but only one build variant (the one with the unaltered tag) is deployed, so repository_deploy_image references only version

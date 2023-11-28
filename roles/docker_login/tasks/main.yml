@@ -1,3 +1,8 @@
+- name: Set up AWS CLI for ECR Registry
+  when: is_ecr_registry is defined
+  include_role:
+    name: aws_tools
+
 - name: Log in to repositories
   docker_login:
     registry: "{{ registry }}"

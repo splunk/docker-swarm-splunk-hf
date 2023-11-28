@@ -1,0 +1,31 @@
+- name: Configure AWS CLI
+  block:
+    - name: Check if AWS CLI is installed
+      command: "which aws"
+      register: awscli_command_path
+      ignore_errors: yes
+      changed_when: no
+
+    - name: Install AWS CLI
+      when: awscli_command_path.rc != 0
+      include_tasks: install_awscli.yml
+
+- name: Authenticate to ECR
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ ecr_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY: "{{ ecr_secret_access_key }}"
+    AWS_DEFAULT_REGION: "{{ ecr_aws_region }}"
+  shell: "{{ awscli_command_path.stdout }} ecr get-login-password"
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"
+  delegate_to: "{{ groups['docker_build_hosts'] | first }}"
+  run_once: true
+  no_log: yes
+  changed_when: no
+  register: ecr_password
+
+- name: Set registry password
+  no_log: yes
+  changed_when: no
+  set_fact:
+    registry_password: "{{ ecr_password.stdout }}"
