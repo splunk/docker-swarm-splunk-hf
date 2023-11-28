@@ -1,0 +1,9 @@
+---
+awscli_package: awscli-exe-linux-x86_64.zip
+awscli_stage_dest: /tmp/
+awscli_bindir: /usr/local/aws
+awscli_instdir: /usr/bin/aws
+aws_ecr_username: AWS
+aws_region_ecr: YOUR_AWS_REGION
+aws_access_key_ecr: YOUR_ACCESS_KEY
+aws_secret_key_ecr: YOUR_SECRET_KEY
