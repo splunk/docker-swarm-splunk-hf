@@ -1,4 +1,5 @@
 - name: Install AWS CLI
+  delegate_to: 127.0.0.1
   when: awscli_command_path.rc != 0
   block:
     - name: Download AWS CLI
@@ -7,7 +8,7 @@
         dest: "{{ awscli_stage_dest }}"
       register: downloaded_awscli_archive
     
-    - name: Unarchive "{{ awscli_stage_archive.dest }}"
+    - name: "Unarchive {{ awscli_stage_archive.dest }}"
       unarchive:
         src: "{{ downloaded_awscli_archive.dest }}"
         dest: "{{ awscli_stage_dest }}"

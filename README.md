@@ -323,7 +323,7 @@ If all goes well, you should have six new docker images:
 
 #### Pushing to an ECR repository
 
-To use a ECR repository on AWS, set `is_ecr_registry: true` this will call the `aws_tools` role and install the aws cli on the build host, and grab the password for `docker_login` to use.
+To use a ECR repository on AWS, set `is_ecr_registry: true` this will call the `aws_tools` role and install the aws cli on the ansible controller, and grab the password for `docker_login` to use.
 
 The following variables need to be set to use a ECR repository:
 * ecr_access_key_id
