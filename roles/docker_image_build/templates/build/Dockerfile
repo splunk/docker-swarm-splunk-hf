@@ -13,6 +13,11 @@ RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime \
   && apt-get install -y --no-install-recommends wget ca-certificates {{ apt_packages|join(' ') }} \
   && apt-get clean
 
+# Add tini as an init to fix signal forwarding when using a bash script as the entrypoint
+ENV TINI_VERSION {{ tini_version }}
+ADD https://github.com/krallin/tini/releases/download/${{ tini_version }}/tini /tini
+RUN chmod +x /tini
+
 {% if install_splunk %}
 # change user prior to untarring splunk
 USER {{ splunk_user_id }}:{{ splunk_group_id }}
@@ -40,7 +45,7 @@ COPY {% if 'owner' in copy_path_config %}--chown={{ copy_path_config.owner }}{% 
 {% endfor %}
 
 {% if run_commands %}
-# configurable RUN commands are called after file copies so they can use the copied fils
+# configurable RUN commands are called after file copies so they can use the copied files
 {% for run_command in run_commands %}
 {% if 'user' in run_command %}
 USER {{ run_command.user }}{% if 'group' in run_command  %}:{{ run_command.group }}{% endif %}
@@ -66,7 +71,7 @@ RUN {{ splunk_home }}/bin/splunk btool check
 {% endif %}
 
 # entrypoint.sh may do run-time configurations prior to starting splunk
-ENTRYPOINT {{ entrypoint }}
+ENTRYPOINT [ "/tini", "--", {{ entrypoint | tojson | join(', ') }} ]
 
 {% if healthcheck_command %}
 HEALTHCHECK \
