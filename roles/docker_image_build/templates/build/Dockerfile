@@ -71,7 +71,7 @@ RUN {{ splunk_home }}/bin/splunk btool check
 {% endif %}
 
 # entrypoint.sh may do run-time configurations prior to starting splunk
-ENTRYPOINT [ "/tini", "--", {{ entrypoint | tojson | join(', ') }} ]
+ENTRYPOINT [ "/tini", "-g", "--", {{ entrypoint | tojson | join(', ') }} ]
 
 {% if healthcheck_command %}
 HEALTHCHECK \
