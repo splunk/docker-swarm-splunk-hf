@@ -226,6 +226,9 @@ a value of `True` when the non-standalone image is built.  Thus we have these im
 * Install user-seed.conf
 * Configure server.conf, inputs.conf with servername
 * Configure convenience indexed fields
+* Configure `storageEngineMigration` in `server.conf` when `migrate_kvstore` is defined (only needed on version 8.x)
+* Always upgrade kvstore from 3.6 to 4.0 (only works on 9.x)
+* Upgrade kvstore to latest version when `upgrade_kvstrore` is defined
 
 [templates/kvstore_disable](roles/docker_image_build/templates/kvstore_disable)
 * Disables KVStore on primary builds (but overrideable)
