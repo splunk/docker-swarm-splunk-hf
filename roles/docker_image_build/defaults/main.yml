@@ -6,6 +6,8 @@ ubuntu_tag: latest
 
 timezone: UTC
 
+tini_version: v0.19.0
+
 splunk_home: /opt/splunk
 splunk_user: splunk
 splunk_user_id: 8089
