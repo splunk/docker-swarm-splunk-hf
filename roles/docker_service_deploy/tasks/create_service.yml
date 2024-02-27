@@ -3,9 +3,11 @@
     image: "{{ repository_deploy_image }}"
     name: "{{ inventory_hostname }}"
     hostname: "{{ inventory_hostname }}"
-    limit_cpu: "{{ limit_cpu }}"
-    limit_memory: "{{ limit_memory }}"
-    restart_policy: "{{ restart_policy }}"
+    limits:
+      cpus: "{{ limit_cpu }}"
+      memory: "{{ limit_memory }}"
+    restart_config:
+      condition: "{{ restart_policy }}"
     publish: "{{ publish | default(omit) }}"
     replicas: "{{ replicas | default(omit) }}"
     # XXX - stupid naming
@@ -14,8 +16,9 @@
     state: "{{ state|default(omit) }}"
     # require user to be specified, because defaults to root pre-2.8, overriding the image configuration
     user: "{{ user }}"
-    log_driver: "{{ log_driver | default(omit) }}"
-    log_driver_options: "{{ log_driver_options | default(omit) }}"
+    logging:
+      driver: "{{ log_driver | default(omit) }}"
+      options: "{{ log_driver_options | default(omit) }}"
     env: "{{ env | default(omit) }}"
   become: "{{ docker_become_user is defined }}"
   become_user: "{{ docker_become_user|default(omit) }}"
