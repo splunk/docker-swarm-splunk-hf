@@ -1,5 +1,5 @@
 ---
-- name: pull iamges on all hosts
+- name: pull images on all hosts
   docker_image:
     #name: "{{ repository }}:443/{{ docker_image_name }}:{{ version }}"
     name: "{{ repository_deploy_image }}"
