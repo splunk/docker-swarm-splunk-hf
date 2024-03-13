@@ -1,0 +1,11 @@
+---
+- name: pull images on all hosts
+  docker_image:
+    #name: "{{ repository }}:443/{{ docker_image_name }}:{{ version }}"
+    name: "{{ repository_deploy_image }}"
+    source: pull
+  loop: "{{ groups['docker_swarm_managers'] }}"
+  delegate_to: "{{ item }}"
+  become: "{{ docker_become_user is defined }}"
+  become_user: "{{ docker_become_user|default(omit) }}"
+
