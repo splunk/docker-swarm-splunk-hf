@@ -61,3 +61,5 @@ role_build_variants:
 
 # skip_build_and_push is overrideable by using the skip-if-in-registry tag, but defaults to false to always perform the build
 skip_build_and_push: false
+# Pull images on all docker hosts when running deploy.yml. Required for ECR authentication.
+pull_images: false

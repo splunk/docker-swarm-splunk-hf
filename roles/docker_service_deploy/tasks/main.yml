@@ -15,6 +15,10 @@
     loop_var: volume_item
   tags: volumes
 
+- name: Pull images
+  include_tasks: pull_images.yml
+  when: pull_images == true
+
 - name: handle config changes
   block:
     # docker configs can't be changed while associated with a running service
@@ -26,7 +30,7 @@
       include_tasks: create_service.yml
 
   rescue:
-    - name:  create temporary configs
+    - name: create temporary configs
       include_tasks: create_configs.yml
       vars:
         intermediate_configs: true
@@ -36,7 +40,7 @@
       vars:
         intermediate_configs: true
 
-    - name:  update final configs
+    - name: update final configs
       include_tasks: create_configs.yml
 
     - name: update service with final configs
