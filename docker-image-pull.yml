@@ -1,0 +1,5 @@
+- hosts: docker_services
+  # no need for gathered facts to push the image
+  gather_facts: no
+  roles:
+    - role: docker_image_pull

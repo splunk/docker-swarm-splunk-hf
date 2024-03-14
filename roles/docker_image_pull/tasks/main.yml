@@ -1,4 +1,3 @@
----
 - name: pull images on all hosts
   docker_image:
     name: "{{ repository_deploy_image }}"
