@@ -37,6 +37,7 @@
     separate_git_dir: "{{ stage_item.separate_git_dir | default(omit) }}"
     key_file: "{{ temp_ssh_key | default(omit) }}"
     accept_hostkey: "{{ stage_item.accept_hostkey | default(omit) }}"
+    accept_newhostkey: "{{ accept_newhostkey | default(omit) }}"
     ssh_opts: "{{ stage_item.ssh_opts | default(omit) }}"
     version: "{{ stage_item.version }}"
     dest: "{{ stage_dest }}"
