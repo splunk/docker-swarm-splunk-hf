@@ -6,6 +6,8 @@ ubuntu_tag: latest
 
 timezone: UTC
 
+tini_version: v0.19.0
+
 splunk_home: /opt/splunk
 splunk_user: splunk
 splunk_user_id: 8089
@@ -54,6 +56,9 @@ healthcheck_command: |-
   {% endif %}
 
 entrypoint: "{{ splunk_home }}/entrypoint.sh"
+tini_entrypoint: "{{ [\"/tini\", \"--\", \"/bin/bash\", \"-c\"] + entrypoint | split }}"
+entrypoint_list: "{{ tini_entrypoint | to_json }}"
+
 # by default run entrypoint as splunk user
 entrypoint_user: "{{ splunk_user_id }}:{{ splunk_group_id }}"
 

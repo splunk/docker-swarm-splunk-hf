@@ -20,6 +20,7 @@
       driver: "{{ log_driver | default(omit) }}"
       options: "{{ log_driver_options | default(omit) }}"
     env: "{{ env | default(omit) }}"
+    stop_grace_period: "{{ stop_grace_period | default(omit) }}"
   become: "{{ docker_become_user is defined }}"
   become_user: "{{ docker_become_user|default(omit) }}"
   # tagged to allow skipping to allow only management of volumes

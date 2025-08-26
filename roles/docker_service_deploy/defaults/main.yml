@@ -11,3 +11,7 @@ splunk_user: splunk
 splunk_user_id: 8089
 splunk_group: splunk
 splunk_group_id: 8089
+
+# https://docs.docker.com/reference/cli/docker/service/create/
+# Note: Docker Swarm defaults to 10s
+stop_grace_period: 10s

@@ -1,4 +1,0 @@
-10-24-2020 00:00:00.000 +0000 INFO  Metrics - group=thruput, name=index_thruput, instantaneous_kbps=1.5817919836208267, instantaneous_eps=4.747268197433524, average_kbps=2.5931167474090575, total_k_processed=2087, kb=48.98046875, ev=147
-10-24-2020 00:00:00.000 +0000 INFO  Metrics - group=per_index_thruput, series="not_checked", kbps=3.990889931960843, eps=26.914043282402872, kb=122.6298828125, ev=827, avg_age=1.3155985489721886, max_age=8
-10-24-2020 00:00:00.000 +0000 INFO  Metrics - group=per_index_thruput, series="_internal", kbps=3.990889931960843, eps=26.914043282402872, kb=122.6298828125, ev=827, avg_age=1.3155985489721886, max_age=8
-10-24-2020 00:05:00.000 +0000 INFO  Metrics - group=per_index_thruput, series="_internal", kbps=0.9597524969886801, eps=6.071567569264395, kb=29.7177734375, ev=188, avg_age=0.9414893617021277, max_age=2
